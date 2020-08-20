@@ -9,8 +9,16 @@ from transformers import AdamW
 from torch.nn import CrossEntropyLoss
 from tqdm import tqdm, trange
 from sklearn.metrics import f1_score
+import argparse
 
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+parser = argparse.ArgumentParser()
+parser.add_argument('--device',type=str,default='cuda:1',help='')
+
+
+args = parser.parse_args()
+
+# device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+device = torch.device(args.device if torch.cuda.is_available() else 'cpu')
 
 
 class InputExample(object):
@@ -59,7 +67,7 @@ def convert_examples_to_features(examples, label_list, max_seq, tokenizer):
         tokens = ["[CLS]"] + tokens[:max_seq - 2] + ["[SEP]"]
         input_ids = tokenizer.convert_tokens_to_ids(tokens)
         input_mask = [1] * len(input_ids)
-        padding = [0] * (max_seq - len(input_ids))
+        padding = [0] * (max_seq - len(input_ids))   #这里先tokenizer convert之后再padding
         label_id = label_map[example.label]
         features.append(InputFeatures(
             input_ids=input_ids + padding,
@@ -117,14 +125,14 @@ class BertTextCNN(BertPreTrainedModel):
 
 
 def compute_metrics(preds, labels):
-    return {'ac': (preds == labels).mean(), 'f1': f1_score(y_true=labels, y_pred=preds)}
+    return {'ac': (preds == labels).mean(), 'f1': f1_score(y_true=labels, y_pred=preds)}  #这个ac是准确率？
 
 
 def main(bert_model='bert-base-chinese', cache_dir=None,
          max_seq=128, batch_size=16, num_epochs=10, lr=2e-5):
     processor = Processor()
-    train_examples = processor.get_train_examples('data/hotel')
-    label_list = processor.get_labels()
+    train_examples = processor.get_train_examples('data/hotel')  #加载训练模型
+    label_list = processor.get_labels()  #label列表[0,1]
     tokenizer = BertTokenizer.from_pretrained(bert_model, do_lower_case=True)
     model = BertClassification.from_pretrained(bert_model,
                                                cache_dir=cache_dir, num_labels=len(label_list))
@@ -146,7 +154,7 @@ def main(bert_model='bert-base-chinese', cache_dir=None,
     all_input_mask = torch.tensor([f.input_mask for f in train_features], dtype=torch.long)
     all_label_ids = torch.tensor([f.label_id for f in train_features], dtype=torch.long)
     train_data = TensorDataset(all_input_ids, all_input_mask, all_label_ids)
-    train_sampler = RandomSampler(train_data)
+    train_sampler = RandomSampler(train_data)  #从数据集中随机采样
     train_dataloader = DataLoader(train_data, sampler=train_sampler, batch_size=batch_size)
     model.train()
     for _ in trange(num_epochs, desc='Epoch'):
@@ -154,9 +162,9 @@ def main(bert_model='bert-base-chinese', cache_dir=None,
         for step, batch in enumerate(tqdm(train_dataloader, desc='Iteration')):
             input_ids, input_mask, label_ids = tuple(t.to(device) for t in batch)
             loss = model(input_ids, input_mask, label_ids)
-            loss.backward()
-            optimizer.step()
-            optimizer.zero_grad()
+            loss.backward()  #计算梯度
+            optimizer.step()  #单步优化
+            optimizer.zero_grad()  #梯度清空
             tr_loss += loss.item()
         print('tr_loss', tr_loss)
     print('eval...')
@@ -172,8 +180,8 @@ def main(bert_model='bert-base-chinese', cache_dir=None,
     preds = []
     for batch in tqdm(eval_dataloader, desc='Evaluating'):
         input_ids, input_mask, label_ids = tuple(t.to(device) for t in batch)
-        with torch.no_grad():
-            logits = model(input_ids, input_mask, None)
+        with torch.no_grad():  #不计算梯度
+            logits = model(input_ids, input_mask, None)  #这里不提供label
             preds.append(logits.detach().cpu().numpy())
     preds = np.argmax(np.vstack(preds), axis=1)
     print(compute_metrics(preds, eval_label_ids.numpy()))
