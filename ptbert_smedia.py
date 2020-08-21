@@ -95,14 +95,14 @@ class DataProcessor(object):
         return examples
     def get_valid_examples(self):
         examples = []
-        for i, (label, text) in self.validset:
+        for i, (label, text) in enumerate(self.validset):
             guid = "{0}-{1}-{2}".format('train', label, i)
             examples.append(InputExample(guid=guid, text=text, label=label))
         random.shuffle(examples)
         return examples
     def get_test_examples(self):
         examples = []
-        for i, (label, text) in self.testset:
+        for i, (label, text) in enumerate(self.testset):
             guid = "{0}-{1}-{2}".format('train', label, i)
             examples.append(InputExample(guid=guid, text=text, label=label))
         random.shuffle(examples)
