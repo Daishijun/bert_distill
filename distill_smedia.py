@@ -69,7 +69,7 @@ if __name__ == '__main__':
     ngram_range = (3, 6)
     teach_on_dev = True
     if not use_aug:
-        (x_tr, y_tr, t_tr), (x_de, y_de, t_de), (x_te, y_te, t_te), v_size = load_data(datapath)  #这个Word2vec得到的embedding没有用
+        (x_tr, y_tr, t_tr), (x_de, y_de, t_de), (x_te, y_te, t_te), v_size = load_datav2(datapath)  #这个Word2vec得到的embedding没有用
     else:
         # will introduce randomness, thus can't be loaded below
         raise Exception
