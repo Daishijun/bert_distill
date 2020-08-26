@@ -12,6 +12,7 @@ from transformers import BertTokenizer
 from ptbert_smedia import *
 from small import *
 from utils_smedia import *
+import time
 
 import argparse
 import random
@@ -81,9 +82,12 @@ if __name__ == '__main__':
     truths, texts = zip(*test_label_text_list)
     print('length of truths: {}\t of texts: {}'.format(len(truths), len(texts)))
 
+    starttime = time.time()
     with torch.no_grad():
         pred = np.vstack([teacher.predict(text) for text in tqdm(texts)])
 
+    endtime = time.time()
+    infertime = endtime - starttime
     # print('type of teacher predict: {}\t pred:{}'.format(type(pred_0), pred_0))
     # print('truth of index 0 : {}'.format(truths[0]))
 
@@ -108,6 +112,6 @@ if __name__ == '__main__':
     print('recall : {}'.format(recall))
     print('thres: {}'.format(thresholds))
 
-
-    np.savez('data/cache/prthres_bert_finetune.npz', precision = precision, recall = recall, thres = thresholds)
-    print('p-r dump to npz ok')
+    print('+++Avg Inference Time : {}+++'.format(infertime/len(truths)))
+    # np.savez('data/cache/prthres_bert_finetune.npz', precision = precision, recall = recall, thres = thresholds)
+    # print('p-r dump to npz ok')
