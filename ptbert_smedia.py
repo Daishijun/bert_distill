@@ -235,7 +235,7 @@ def compute_metrics(preds, labels):
 
 
 def main(bert_model='bert-base-cased', cache_dir=None,
-         max_seq=128, batch_size=64, num_epochs=10, lr=2e-5):
+         max_seq=128, batch_size=64, num_epochs=20, lr=2e-5):
     # datapath = 'data/smediatest/CBaitdata-08-17.json'
 
     datapath_train = 'data/smediatest/CBaitdata_merge_smedia_train.json'
@@ -245,7 +245,7 @@ def main(bert_model='bert-base-cased', cache_dir=None,
     # processor = DataProcessor(datapath=datapath)
     processor_train = DataProcessorv2(file=datapath_train, actor='train')
     processor_valid = DataProcessorv2(file=datapath_valid, actor='valid')
-    processor_test = DataProcessorv2(file=datapath_test, actor='valid')
+    processor_test = DataProcessorv2(file=datapath_test, actor='test')
     # train_examples = processor.get_train_examples()
     train_examples = processor_train.get_example()
     # label_list = processor.get_labels()  #label列表[0,1]
@@ -305,7 +305,7 @@ def main(bert_model='bert-base-cased', cache_dir=None,
             preds.append(logits.detach().cpu().numpy())
     preds = np.argmax(np.vstack(preds), axis=1)
     print(compute_metrics(preds, eval_label_ids.numpy()))
-    torch.save(model, 'data/cache/model_smedia_smedia')
+    torch.save(model, 'data/cache/model_smedia_smedia_epoch20')
 
     print('test-----')
     test_examples = processor_test.get_example()
