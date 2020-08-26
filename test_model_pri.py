@@ -81,9 +81,10 @@ if __name__ == '__main__':
     print('length of truths: {}\t of texts: {}'.format(len(truths), len(texts)))
 
     with torch.no_grad():
-        pred_0 = teacher.predict(texts[0])
+        pred = np.vstack([teacher.predict(text) for text in tqdm(texts)])
 
-    print('type of teacher predict: {}\t pred:{}'.format(type(pred_0), pred_0))
-    print('truth of index 0 : {}'.format(truths[0]))
+    # print('type of teacher predict: {}\t pred:{}'.format(type(pred_0), pred_0))
+    # print('truth of index 0 : {}'.format(truths[0]))
 
-
+    print('type of pred :{}'.format(type(pred)))
+    print('pred: \n{}'.format(pred))
