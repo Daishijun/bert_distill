@@ -99,7 +99,8 @@ if __name__ == '__main__':
     print('confusion matrix')
     print(confusion_matrix(y_true=truths, y_pred=pred_class))
 
-    pred_scores = np.array(list(zip(*pred)[1]))
+    pred_0_scores, pred_scores = zip(*pred)
+    pred_scores = np.array(list(pred_scores))
     precision, recall, thresholds = precision_recall_curve(y_true=truths, probas_pred=pred_scores)
 
     print('P-R curve')
