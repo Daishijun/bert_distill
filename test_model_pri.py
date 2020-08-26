@@ -84,5 +84,6 @@ if __name__ == '__main__':
         pred_0 = teacher.predict(texts[0])
 
     print('type of teacher predict: {}\t pred:{}'.format(type(pred_0), pred_0))
+    print('truth of index 0 : {}'.format(truths[0]))
 
 
