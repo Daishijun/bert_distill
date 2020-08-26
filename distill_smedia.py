@@ -83,18 +83,18 @@ if __name__ == '__main__':
     x_tr = sequence.pad_sequences(x_tr, maxlen=x_len)
     x_de = sequence.pad_sequences(x_de, maxlen=x_len)
     x_te = sequence.pad_sequences(x_te, maxlen=x_len)
-    with torch.no_grad():
-        t_tr = np.vstack([teacher.predict(text) for text in tqdm(t_tr)])
-        t_de = np.vstack([teacher.predict(text) for text in tqdm(t_de)])
-    with open('./data/cache/t_tr_smedia_rnntest','wb') as fout: pickle.dump(t_tr,fout)
-    with open('./data/cache/t_de_smedia_rnntest','wb') as fout: pickle.dump(t_de,fout)
-    # with open('./data/cache/t_tr', 'rb') as fin:
-    #     t_tr = pickle.load(fin)
-    # with open('./data/cache/t_de', 'rb') as fin:
-    #     t_de = pickle.load(fin)
+    # with torch.no_grad():
+    #     t_tr = np.vstack([teacher.predict(text) for text in tqdm(t_tr)])
+    #     t_de = np.vstack([teacher.predict(text) for text in tqdm(t_de)])
+    # with open('./data/cache/t_tr_smedia_rnntest','wb') as fout: pickle.dump(t_tr,fout)
+    # with open('./data/cache/t_de_smedia_rnntest','wb') as fout: pickle.dump(t_de,fout)
+    with open('./data/cache/t_tr_smedia_rnntest', 'rb') as fin:
+        t_tr = pickle.load(fin)
+    with open('./data/cache/t_tr_smedia_rnntest', 'rb') as fin:
+        t_de = pickle.load(fin)
 
-    model = RNN(v_size, 256, 256, 2)  #小模型GRU
-    # model = CNN(v_size,256,128,2)
+    # model = RNN(v_size, 256, 256, 2)  #小模型GRU
+    model = CNN(v_size,256,128,2)
     if USE_CUDA: model = model.cuda()
     opt = optim.Adam(model.parameters(), lr=lr)
     ce_loss = nn.NLLLoss()  ## 这个并不是交叉熵啊； 输入应该是log-probabilities of each class
@@ -136,5 +136,5 @@ if __name__ == '__main__':
         print(np.mean(losses), np.mean(accu))
 
     # save distill model
-    torch.save(model, 'data/cache/model_dis_rnn_test')
+    torch.save(model, 'data/cache/model_dis_textcnn_test')
     print('rnn model save ok')
