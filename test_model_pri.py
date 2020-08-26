@@ -107,3 +107,11 @@ if __name__ == '__main__':
     print('precision: {}'.format(precision))
     print('recall : {}'.format(recall))
     print('thres: {}'.format(thresholds))
+
+    prthres_dict = {'precision':precision,
+                    'recall': recall,
+                    'thres': thresholds}
+
+    with open('data/cache/p-r-thres_bertfinet.json', 'w') as f:
+        json.dump(prthres_dict, f)
+    print('p-r dump to json ok')
