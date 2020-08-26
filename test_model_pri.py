@@ -109,13 +109,5 @@ if __name__ == '__main__':
     print('thres: {}'.format(thresholds))
 
 
-    print(list(precision))
-    print(list(recall))
-    print(list(thresholds))
-    prthres_dict = {'precision':list(precision),
-                    'recall': list(recall),
-                    'thres': list(thresholds)}
-
-    with open('data/cache/p-r-thres_bertfinet.json', 'w') as f:
-        json.dump(prthres_dict, f)
-    print('p-r dump to json ok')
+    np.savez('data/cache/prthres_bert_finetune.npz', precision = precision, recall = recall, thres = thresholds)
+    print('p-r dump to npz ok')
