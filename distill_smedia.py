@@ -62,7 +62,7 @@ if __name__ == '__main__':
     x_len = 50  #？？
     b_size = 64
     lr = 0.002
-    epochs = 10
+    epochs = 50
     # name = 'hotel'  # clothing, fruit, hotel, pda, shampoo
     alpha = 0.5     # portion of the original one-hot CE loss
     use_aug = False  # whether to use data augmentation
