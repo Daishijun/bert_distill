@@ -67,7 +67,7 @@ if __name__ == '__main__':
     x_te = sequence.pad_sequences(x_te, maxlen=x_len)
 
     # model = RNN(v_size, 256, 256, 2)  #小模型GRU
-    model = CNN(v_size, 256, 128, 2)
+    # model = CNN(v_size, 256, 128, 2)
     model = torch.load('data/cache/model_dis_textcnn_test')
     if USE_CUDA: model = model.cuda()
     model.eval()
@@ -78,7 +78,7 @@ if __name__ == '__main__':
     bx = Variable(LTensor(x_te))
     by = Variable(LTensor(y_te))  # 这里是真实标签
     bl = Variable(LTensor(l_te))
-    bt = Variable(FTensor(t_te))  # 根据上面写入的文件里的，这里的是预测的结果
+    # bt = Variable(FTensor(t_te))  # 根据上面写入的文件里的，这里的是预测的结果
 
     starttime = time.time()
     i = 0
