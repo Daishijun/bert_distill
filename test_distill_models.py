@@ -68,7 +68,8 @@ if __name__ == '__main__':
 
     # model = RNN(v_size, 256, 256, 2)  #小模型GRU
     # model = CNN(v_size, 256, 128, 2)
-    model = torch.load('data/cache/model_dis_textcnn_test')
+    # model = torch.load('data/cache/model_dis_textcnn_test')
+    model = torch.load('data/cache/model_dis_rnn_test')
     if USE_CUDA: model = model.cuda()
     model.eval()
 
@@ -121,6 +122,6 @@ if __name__ == '__main__':
     print('thres: {}'.format(thresholds))
 
     print('+++Avg Inference Time : {}+++'.format(infertime / len(truths)))
-    np.savez('data/cache/prthres_distill_cnn_0817.npz', precision=precision, recall=recall, thres=thresholds)
+    np.savez('data/cache/prthres_distill_rnn_0817.npz', precision=precision, recall=recall, thres=thresholds)
     print('p-r dump to npz ok')
 
