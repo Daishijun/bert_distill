@@ -236,10 +236,10 @@ def compute_metrics(preds, labels):
 
 def main(bert_model='bert-base-cased', cache_dir=None,
          max_seq=128, batch_size=16, num_epochs=10, lr=2e-5):
-    datapath = 'data/smediatest/CBaitdata-08-17.json'
+    # datapath = 'data/smediatest/CBaitdata-08-17.json'
 
-    datapath_train = '/Users/shijundai/CBaitdata_merge_smedia_train.json'
-    datapath_valid = '/Users/shijundai/CBaitdata_merge_0810-0816.json'
+    datapath_train = 'data/smediatest/CBaitdata_merge_smedia_train.json'
+    datapath_valid = 'data/smediatest/CBaitdata_merge_0810-0816.json'
 
 
     # processor = DataProcessor(datapath=datapath)
@@ -304,7 +304,7 @@ def main(bert_model='bert-base-cased', cache_dir=None,
             preds.append(logits.detach().cpu().numpy())
     preds = np.argmax(np.vstack(preds), axis=1)
     print(compute_metrics(preds, eval_label_ids.numpy()))
-    torch.save(model, 'data/cache/model_smedia')
+    torch.save(model, 'data/cache/model_smedia_smedia')
 
 
 if __name__ == '__main__':
