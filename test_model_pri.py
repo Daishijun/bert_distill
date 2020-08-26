@@ -108,6 +108,10 @@ if __name__ == '__main__':
     print('recall : {}'.format(recall))
     print('thres: {}'.format(thresholds))
 
+
+    print(list(precision))
+    print(list(recall))
+    print(list(thresholds))
     prthres_dict = {'precision':list(precision),
                     'recall': list(recall),
                     'thres': list(thresholds)}
