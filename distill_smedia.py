@@ -131,3 +131,7 @@ if __name__ == '__main__':
                 _, py = torch.max(model(bx, bl)[1], 1)
                 accu.append((py == by).float().mean().item())
         print(np.mean(losses), np.mean(accu))
+
+    # save distill model
+    torch.save(model, 'data/cache/model_dis_rnn_test')
+    print('rnn model save ok')
