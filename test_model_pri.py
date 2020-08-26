@@ -53,7 +53,8 @@ if __name__ == '__main__':
     import pickle
     from tqdm import tqdm
 
-    datapath = 'data/smediatest/CBaitdata-08-17.json'
+    # datapath = 'data/smediatest/CBaitdata-08-17.json'
+    datapath = 'data/smediatest/CBaitdata-08-18.json'
     x_len = 50  # ？？
     b_size = 64
     # lr = 0.002
@@ -113,5 +114,5 @@ if __name__ == '__main__':
     print('thres: {}'.format(thresholds))
 
     print('+++Avg Inference Time : {}+++'.format(infertime/len(truths)))
-    # np.savez('data/cache/prthres_bert_finetune.npz', precision = precision, recall = recall, thres = thresholds)
-    # print('p-r dump to npz ok')
+    np.savez('data/cache/prthres_bert_finetune_0818.npz', precision = precision, recall = recall, thres = thresholds)
+    print('p-r dump to npz ok')
