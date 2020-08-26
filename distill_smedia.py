@@ -125,6 +125,8 @@ if __name__ == '__main__':
             bx = Variable(LTensor(x_de[i:i + b_size]))
             bl = Variable(LTensor(l_de[i:i + b_size]))
             bt = Variable(FTensor(t_de[i:i + b_size]))
+            if len(x_de[i:i + b_size]) != b_size:
+                continue
             py1, py2 = model(bx, bl)
 
             print('py1 shape: {}\t bt shape:{}'.format(py1.shape, bt.shape))
@@ -139,6 +141,8 @@ if __name__ == '__main__':
                 bx = Variable(LTensor(x_de[i:i + b_size]))
                 by = Variable(LTensor(y_de[i:i + b_size]))
                 bl = Variable(LTensor(l_de[i:i + b_size]))
+                if len(x_de[i:i + b_size]) != b_size:
+                    continue
                 _, py = torch.max(model(bx, bl)[1], 1)
                 accu.append((py == by).float().mean().item())
         print(np.mean(losses), np.mean(accu))
