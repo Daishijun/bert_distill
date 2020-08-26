@@ -81,16 +81,18 @@ if __name__ == '__main__':
     # bt = Variable(FTensor(t_te))  # 根据上面写入的文件里的，这里的是预测的结果
 
     starttime = time.time()
-    i = 0
+
     with torch.no_grad():
+
 
         # py1, py2 = model(bx, bl)  # 除非这个模型输出的时候，经过了log-softmax() ？？ 这个model返回的两个分别是？
 
         # pred = np.vstack([model(text) for text in tqdm(texts)])
-        pred = np.vstack([model(bx.unsqueeze(dim=0), bl.unsqueeze(dim=0))[0] for bx, bl in tqdm(zip(bx, bl))])
-        if not i:
-            print('pred: {}'.format(pred))
-            i +=1
+        pred = np.vstack([torch.Tensor.cpu(model(bx.unsqueeze(dim=0), bl.unsqueeze(dim=0))[0]) for bx, bl in tqdm(zip(bx, bl))])
+        # if not i:
+        #     print('pred: {}'.format(pred))
+        #     i +=1
+
 
 
     endtime = time.time()
