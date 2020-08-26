@@ -6,7 +6,7 @@ import torch.optim as optim
 import torch.nn.functional as F
 from torch.autograd import Variable
 from keras.preprocessing import sequence
-from utils import load_data
+# from utils import load_data
 
 USE_CUDA = torch.cuda.is_available()
 if USE_CUDA: torch.cuda.set_device(0)
