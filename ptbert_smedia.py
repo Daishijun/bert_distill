@@ -42,20 +42,92 @@ class InputFeatures(object):
         self.label_id = label_id
 
 
-class DataProcessor(object):
-    def __init__(self, datapath):
+# class DataProcessor(object):
+#     def __init__(self, datapath):
+#         self.posflag = 'CB'
+#         self.negflag = 'NotCB'
+#         self.poskeys = ['withEnt', 'nonEnt']
+#         self.negkeys = ['pass']
+#         self.trainrate = 0.6
+#         self.validrate = 0.2
+#         self.trainset, self.validset, self.testset = self._split_train_dev_test(datapath)
+#
+#     def _load_samples(self, data_path):
+#         allpos = []
+#         allneg = []
+#         with open(data_path, 'r') as f:
+#             datajson = json.load(f)
+#
+#             if not datajson.get(self.posflag, None):
+#                 print('empty posflag')
+#                 pass
+#             elif not datajson.get(self.negflag, None):
+#                 print('empty negflag')
+#                 pass
+#             else:
+#                 for posk in self.poskeys:
+#                     poslist = datajson[self.posflag][posk]
+#                     for sampledict in poslist:
+#                         label, text = sampledict['label'], str(sampledict['title'])
+#                         allpos.append((label, text))
+#                 for negk in self.negkeys:
+#                     neglist = datajson[self.negflag][negk]
+#                     for sampledict in neglist:
+#                         label, text = sampledict['label'], sampledict['title']
+#                         allneg.append((label, text))
+#                 # random.shuffle(allpos)
+#                 # random.shuffle(allneg)
+#         return allpos, allneg
+#
+#     def _split_train_dev_test(self, data_path):
+#         allpos, allneg = self._load_samples(data_path)
+#         trainsample = allpos[:round(len(allpos)*self.trainrate)] + allneg[:round(len(allneg)*self.trainrate)]
+#         validsample = allpos[:round(len(allpos)*(self.trainrate+self.validrate))] + allneg[:round(len(allneg)*(self.trainrate+self.validrate))]
+#         testsample = allpos[round(len(allpos)*(self.trainrate+self.validrate)):] + allneg[round(len(allneg)*(self.trainrate+self.validrate)):]
+#         return trainsample, validsample, testsample
+#
+#     def get_train_examples(self):
+#         examples = []
+#         for i, (label, text) in enumerate(self.trainset):
+#             guid = "{0}-{1}-{2}".format('train', label, i)
+#             examples.append(InputExample(guid=guid, text=text, label=label))
+#         random.shuffle(examples)
+#         return examples
+#     def get_valid_examples(self):
+#         examples = []
+#         for i, (label, text) in enumerate(self.validset):
+#             guid = "{0}-{1}-{2}".format('train', label, i)
+#             examples.append(InputExample(guid=guid, text=text, label=label))
+#         random.shuffle(examples)
+#         return examples
+#     def get_test_examples(self):
+#         examples = []
+#         for i, (label, text) in enumerate(self.testset):
+#             guid = "{0}-{1}-{2}".format('train', label, i)
+#             examples.append(InputExample(guid=guid, text=text, label=label))
+#         random.shuffle(examples)
+#         return examples
+#
+#     def get_labels(self):
+#         return ['0', '1']
+
+
+class DataProcessorv2(object):
+    def __init__(self, file, actor):
         self.posflag = 'CB'
         self.negflag = 'NotCB'
         self.poskeys = ['withEnt', 'nonEnt']
         self.negkeys = ['pass']
-        self.trainrate = 0.6
-        self.validrate = 0.2
-        self.trainset, self.validset, self.testset = self._split_train_dev_test(datapath)
+        # self.trainrate = 0.6
+        # self.validrate = 0.2
+        self.file = file
+        self.actor = actor
+        self.allpos, self.allneg = self._load_samples(file)
 
-    def _load_samples(self, data_path):
+    def _load_samples(self, file):
         allpos = []
         allneg = []
-        with open(data_path, 'r') as f:
+        with open(file, 'r') as f:
             datajson = json.load(f)
 
             if not datajson.get(self.posflag, None):
@@ -79,40 +151,15 @@ class DataProcessor(object):
                 # random.shuffle(allneg)
         return allpos, allneg
 
-    def _split_train_dev_test(self, data_path):
-        allpos, allneg = self._load_samples(data_path)
-        trainsample = allpos[:round(len(allpos)*self.trainrate)] + allneg[:round(len(allneg)*self.trainrate)]
-        validsample = allpos[:round(len(allpos)*(self.trainrate+self.validrate))] + allneg[:round(len(allneg)*(self.trainrate+self.validrate))]
-        testsample = allpos[round(len(allpos)*(self.trainrate+self.validrate)):] + allneg[round(len(allneg)*(self.trainrate+self.validrate)):]
-        return trainsample, validsample, testsample
-
-    def get_train_examples(self):
+    def get_example(self):
         examples = []
-        for i, (label, text) in enumerate(self.trainset):
-            guid = "{0}-{1}-{2}".format('train', label, i)
+        for i, (label, text) in enumerate(self.allpos + self.allneg):
+            guid = "{0}-{1}-{2}".format(self.actor, label, i)
             examples.append(InputExample(guid=guid, text=text, label=label))
         random.shuffle(examples)
         return examples
-    def get_valid_examples(self):
-        examples = []
-        for i, (label, text) in enumerate(self.validset):
-            guid = "{0}-{1}-{2}".format('train', label, i)
-            examples.append(InputExample(guid=guid, text=text, label=label))
-        random.shuffle(examples)
-        return examples
-    def get_test_examples(self):
-        examples = []
-        for i, (label, text) in enumerate(self.testset):
-            guid = "{0}-{1}-{2}".format('train', label, i)
-            examples.append(InputExample(guid=guid, text=text, label=label))
-        random.shuffle(examples)
-        return examples
-
     def get_labels(self):
         return ['0', '1']
-
-
-
 
 
 
@@ -190,9 +237,20 @@ def compute_metrics(preds, labels):
 def main(bert_model='bert-base-cased', cache_dir=None,
          max_seq=128, batch_size=16, num_epochs=10, lr=2e-5):
     datapath = 'data/smediatest/CBaitdata-08-17.json'
-    processor = DataProcessor(datapath=datapath)
-    train_examples = processor.get_train_examples()
-    label_list = processor.get_labels()  #label列表[0,1]
+
+    datapath_train = '/Users/shijundai/CBaitdata_merge_smedia_train.json'
+    datapath_valid = '/Users/shijundai/CBaitdata_merge_0810-0816.json'
+
+
+    # processor = DataProcessor(datapath=datapath)
+    processor_train = DataProcessorv2(file=datapath_train, actor='train')
+    processor_valid = DataProcessorv2(file=datapath_valid, actor='valid')
+    # train_examples = processor.get_train_examples()
+    train_examples = processor_train.get_example()
+    # label_list = processor.get_labels()  #label列表[0,1]
+    label_list = processor_train.get_labels()  #label列表[0,1]
+
+    print('train data load ok')
     tokenizer = BertTokenizer.from_pretrained(bert_model, do_lower_case=True)
     model = BertClassification.from_pretrained(bert_model,
                                                cache_dir=cache_dir, num_labels=len(label_list))
@@ -228,7 +286,8 @@ def main(bert_model='bert-base-cased', cache_dir=None,
             tr_loss += loss.item()
         print('tr_loss', tr_loss)
     print('eval...')
-    eval_examples = processor.get_valid_examples()
+    # eval_examples = processor.get_valid_examples()
+    eval_examples = processor_valid.get_example()
     eval_features = convert_examples_to_features(eval_examples, label_list, max_seq, tokenizer)
     eval_input_ids = torch.tensor([f.input_ids for f in eval_features], dtype=torch.long)
     eval_input_mask = torch.tensor([f.input_mask for f in eval_features], dtype=torch.long)
