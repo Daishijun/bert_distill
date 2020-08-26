@@ -149,7 +149,7 @@ class DataProcessorv2(object):
                         allneg.append((label, text))
                 # random.shuffle(allpos)
                 # random.shuffle(allneg)
-        return allpos[:200], allneg[:200]
+        return allpos, allneg
 
     def get_example(self):
         examples = []
@@ -235,7 +235,7 @@ def compute_metrics(preds, labels):
 
 
 def main(bert_model='bert-base-cased', cache_dir=None,
-         max_seq=128, batch_size=32, num_epochs=1, lr=2e-5):
+         max_seq=128, batch_size=64, num_epochs=10, lr=2e-5):
     # datapath = 'data/smediatest/CBaitdata-08-17.json'
 
     datapath_train = 'data/smediatest/CBaitdata_merge_smedia_train.json'
