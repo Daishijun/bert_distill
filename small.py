@@ -9,7 +9,7 @@ from keras.preprocessing import sequence
 # from utils import load_data
 
 USE_CUDA = torch.cuda.is_available()
-if USE_CUDA: torch.cuda.set_device(0)
+if USE_CUDA: torch.cuda.set_device(1)
 LTensor = torch.cuda.LongTensor if USE_CUDA else torch.LongTensor
 
 
