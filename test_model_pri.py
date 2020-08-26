@@ -16,6 +16,7 @@ from utils_smedia import *
 import argparse
 import random
 
+from sklearn.metrics import confusion_matrix, precision_recall_curve
 import json
 parser = argparse.ArgumentParser()
 parser.add_argument('--device',type=str,default='cuda:1',help='')
@@ -92,4 +93,16 @@ if __name__ == '__main__':
     pred_class =  np.argmax(np.vstack(pred), axis=1)
     print('pred_v2:\n {}'.format(pred_class))
 
-    print('truth: \n {}'.format(truths))
+    truths = np.array(list(truths))
+    # print('truth: \n {}'.format(truths))
+
+    print('confusion matrix')
+    print(confusion_matrix(y_true=truths, y_pred=pred_class))
+
+    pred_scores = np.array(list(zip(*pred)[1]))
+    precision, recall, thresholds = precision_recall_curve(y_true=truths, probas_pred=pred_scores)
+
+    print('P-R curve')
+    print('precision: {}'.format(precision))
+    print('recall : {}'.format(recall))
+    print('thres: {}'.format(thresholds))
