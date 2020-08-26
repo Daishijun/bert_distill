@@ -19,7 +19,7 @@ import argparse
 
 import json
 parser = argparse.ArgumentParser()
-parser.add_argument('--device',type=str,default='cuda:1',help='')
+parser.add_argument('--device',type=str,default='cuda:0',help='')
 
 
 args = parser.parse_args()
