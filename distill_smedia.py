@@ -33,7 +33,7 @@ class Teacher(object):
         self.max_seq = max_seq
         self.tokenizer = BertTokenizer.from_pretrained(
             bert_model, do_lower_case=True)
-        self.model = torch.load('./data/cache/model_smedia')  #加载预训练好的bert
+        self.model = torch.load('./data/cache/model_smedia_smedia')  #加载预训练好的bert
         self.model.eval()  #只做预测不再调参
 
     def predict(self, text):
@@ -54,13 +54,16 @@ if __name__ == '__main__':
     import pickle
     from tqdm import tqdm
 
-    datapath = 'data/smediatest/CBaitdata-08-17.json'
+    # datapath = 'data/smediatest/CBaitdata-08-17.json'
+    trainfile = 'data/smediatest/CBaitdata_merge_smedia_train.json'
+    validfile = 'data/smediatest/CBaitdata_merge_0810-0816.json'
+    testfile = 'data/smediatest/CBaitdata-08-17.json'
 
     x_len = 50  #？？
     b_size = 64
     lr = 0.002
     epochs = 10
-    name = 'hotel'  # clothing, fruit, hotel, pda, shampoo
+    # name = 'hotel'  # clothing, fruit, hotel, pda, shampoo
     alpha = 0.5     # portion of the original one-hot CE loss
     use_aug = False  # whether to use data augmentation
     n_iter = 5
@@ -69,7 +72,7 @@ if __name__ == '__main__':
     ngram_range = (3, 6)
     teach_on_dev = True
     if not use_aug:
-        (x_tr, y_tr, t_tr), (x_de, y_de, t_de), (x_te, y_te, t_te), v_size = load_datav2(datapath)  #这个Word2vec得到的embedding没有用
+        (x_tr, y_tr, t_tr), (x_de, y_de, t_de), (x_te, y_te, t_te), v_size = load_datav2(trainfile, validfile, testfile)  #这个Word2vec得到的embedding没有用
     else:
         # will introduce randomness, thus can't be loaded below
         raise Exception
