@@ -14,7 +14,7 @@ from transformers import BertTokenizer
 from transformers import AdamW
 from torch.nn import CrossEntropyLoss
 from tqdm import tqdm, trange
-from sklearn.metrics import f1_score
+from sklearn.metrics import f1_score, confusion_matrix
 import argparse
 
 import json
@@ -149,7 +149,7 @@ class DataProcessorv2(object):
                         allneg.append((label, text))
                 # random.shuffle(allpos)
                 # random.shuffle(allneg)
-        return allpos, allneg
+        return allpos[:200], allneg[:200]
 
     def get_example(self):
         examples = []
@@ -235,16 +235,17 @@ def compute_metrics(preds, labels):
 
 
 def main(bert_model='bert-base-cased', cache_dir=None,
-         max_seq=128, batch_size=32, num_epochs=10, lr=2e-5):
+         max_seq=128, batch_size=32, num_epochs=1, lr=2e-5):
     # datapath = 'data/smediatest/CBaitdata-08-17.json'
 
     datapath_train = 'data/smediatest/CBaitdata_merge_smedia_train.json'
     datapath_valid = 'data/smediatest/CBaitdata_merge_0810-0816.json'
-
+    datapath_test = 'data/smediatest/CBaitdata-08-17.json'
 
     # processor = DataProcessor(datapath=datapath)
     processor_train = DataProcessorv2(file=datapath_train, actor='train')
     processor_valid = DataProcessorv2(file=datapath_valid, actor='valid')
+    processor_test = DataProcessorv2(file=datapath_test, actor='valid')
     # train_examples = processor.get_train_examples()
     train_examples = processor_train.get_example()
     # label_list = processor.get_labels()  #label列表[0,1]
@@ -305,6 +306,27 @@ def main(bert_model='bert-base-cased', cache_dir=None,
     preds = np.argmax(np.vstack(preds), axis=1)
     print(compute_metrics(preds, eval_label_ids.numpy()))
     torch.save(model, 'data/cache/model_smedia_smedia')
+
+    print('test-----')
+    test_examples = processor_test.get_example()
+    test_features = convert_examples_to_features(test_examples, label_list, max_seq, tokenizer)
+    test_input_ids = torch.tensor([f.input_ids for f in test_features], dtype=torch.long)
+    test_input_mask = torch.tensor([f.input_mask for f in test_features], dtype=torch.long)
+    test_label_ids = torch.tensor([f.label_id for f in test_features], dtype=torch.long)
+    test_data = TensorDataset(test_input_ids, test_input_mask, test_label_ids)
+    test_sampler = SequentialSampler(test_data)
+    test_dataloader = DataLoader(test_data, sampler=test_sampler, batch_size=batch_size)
+    model.eval()
+    preds = []
+    for batch in tqdm(test_dataloader, desc='Testing'):
+        input_ids, input_mask, label_ids = tuple(t.to(device) for t in batch)
+        with torch.no_grad():  # 不计算梯度
+            logits = model(input_ids, input_mask, None)  # 这里不提供label
+            preds.append(logits.detach().cpu().numpy())
+    preds = np.argmax(np.vstack(preds), axis=1)
+    print(compute_metrics(preds, eval_label_ids.numpy()))
+    print(confusion_matrix(y_pred=preds, y_true=eval_label_ids.numpy()))
+
 
 
 if __name__ == '__main__':
