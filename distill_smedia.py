@@ -129,7 +129,7 @@ if __name__ == '__main__':
                 continue
             py1, py2 = model(bx, bl)
 
-            print('py1 shape: {}\t bt shape:{}'.format(py1.shape, bt.shape))
+            # print('py1 shape: {}\t bt shape:{}'.format(py1.shape, bt.shape))
             loss = mse_loss(py1, bt)  #为何valid，只计算了和大模型的回归loss？
             if teach_on_dev:
                 loss.backward()
