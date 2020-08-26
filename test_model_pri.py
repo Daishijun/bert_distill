@@ -88,3 +88,8 @@ if __name__ == '__main__':
 
     print('type of pred :{}'.format(type(pred)))
     print('pred: \n{}'.format(pred))
+
+    pred_class =  np.argmax(np.vstack(pred), axis=1)
+    print('pred_v2:\n {}'.format(pred_class))
+
+    print('truth: \n {}'.format(truths))
