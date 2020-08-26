@@ -235,7 +235,7 @@ def compute_metrics(preds, labels):
 
 
 def main(bert_model='bert-base-cased', cache_dir=None,
-         max_seq=128, batch_size=16, num_epochs=10, lr=2e-5):
+         max_seq=128, batch_size=32, num_epochs=10, lr=2e-5):
     # datapath = 'data/smediatest/CBaitdata-08-17.json'
 
     datapath_train = 'data/smediatest/CBaitdata_merge_smedia_train.json'
