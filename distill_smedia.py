@@ -93,8 +93,8 @@ if __name__ == '__main__':
     with open('./data/cache/t_de_smedia_rnntest', 'rb') as fin:
         t_de = pickle.load(fin)
 
-    # model = RNN(v_size, 256, 256, 2)  #小模型GRU
-    model = CNN(v_size,256,128,2)
+    model = RNN(v_size, 256, 256, 2)  #小模型GRU
+    # model = CNN(v_size,256,128,2)
     if USE_CUDA: model = model.cuda()
     opt = optim.Adam(model.parameters(), lr=lr)
     ce_loss = nn.NLLLoss()  ## 这个并不是交叉熵啊； 输入应该是log-probabilities of each class
@@ -148,5 +148,6 @@ if __name__ == '__main__':
         print(np.mean(losses), np.mean(accu))
 
     # save distill model
-    torch.save(model, 'data/cache/model_dis_textcnn_test')
+    # torch.save(model, 'data/cache/model_dis_textcnn_test')
+    torch.save(model, 'data/cache/model_dis_rnn_test')
     print('rnn model save ok')
