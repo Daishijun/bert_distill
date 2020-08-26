@@ -87,7 +87,7 @@ if __name__ == '__main__':
         # py1, py2 = model(bx, bl)  # 除非这个模型输出的时候，经过了log-softmax() ？？ 这个model返回的两个分别是？
 
         # pred = np.vstack([model(text) for text in tqdm(texts)])
-        pred = np.vstack([model(bx, bl)[0] for bx, bl in tqdm(zip(bx, bl))])
+        pred = np.vstack([model([bx], [bl])[0] for bx, bl in tqdm(zip(bx, bl))])
         if not i:
             print('pred: {}'.format(pred))
             i +=1
