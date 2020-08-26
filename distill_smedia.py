@@ -90,7 +90,7 @@ if __name__ == '__main__':
     # with open('./data/cache/t_de_smedia_rnntest','wb') as fout: pickle.dump(t_de,fout)
     with open('./data/cache/t_tr_smedia_rnntest', 'rb') as fin:
         t_tr = pickle.load(fin)
-    with open('./data/cache/t_tr_smedia_rnntest', 'rb') as fin:
+    with open('./data/cache/t_de_smedia_rnntest', 'rb') as fin:
         t_de = pickle.load(fin)
 
     # model = RNN(v_size, 256, 256, 2)  #小模型GRU
@@ -125,8 +125,8 @@ if __name__ == '__main__':
             bx = Variable(LTensor(x_de[i:i + b_size]))
             bl = Variable(LTensor(l_de[i:i + b_size]))
             bt = Variable(FTensor(t_de[i:i + b_size]))
-            if len(x_de[i:i + b_size]) != b_size:
-                continue
+            # if len(x_de[i:i + b_size]) != b_size:
+            #     continue
             py1, py2 = model(bx, bl)
 
             # print('py1 shape: {}\t bt shape:{}'.format(py1.shape, bt.shape))
@@ -141,8 +141,8 @@ if __name__ == '__main__':
                 bx = Variable(LTensor(x_de[i:i + b_size]))
                 by = Variable(LTensor(y_de[i:i + b_size]))
                 bl = Variable(LTensor(l_de[i:i + b_size]))
-                if len(x_de[i:i + b_size]) != b_size:
-                    continue
+                # if len(x_de[i:i + b_size]) != b_size:
+                #     continue
                 _, py = torch.max(model(bx, bl)[1], 1)
                 accu.append((py == by).float().mean().item())
         print(np.mean(losses), np.mean(accu))
