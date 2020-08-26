@@ -34,7 +34,7 @@ class Teacher(object):
         self.max_seq = max_seq
         self.tokenizer = BertTokenizer.from_pretrained(
             bert_model, do_lower_case=True)
-        self.model = torch.load('./data/cache/model_smedia')  #加载预训练好的bert
+        self.model = torch.load('./data/cache/model_smedia_smedia')  #加载预训练好的bert
         self.model.eval()  #只做预测不再调参
 
     def predict(self, text):
