@@ -75,6 +75,10 @@ if __name__ == '__main__':
     opt = optim.Adam(model.parameters(), lr=lr)
     ce_loss = nn.NLLLoss()  ## 这个并不是交叉熵啊； 输入应该是log-probabilities of each class
     mse_loss = nn.MSELoss()
+
+    ###
+    print('length of x_tr: {}'.format(len(x_tr)))
+    ###
     for epoch in range(epochs):  #每个epoch都会进行一次valid
         losses = []
         accu = []
