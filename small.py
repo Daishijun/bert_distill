@@ -19,7 +19,7 @@ class RNN(nn.Module):
         self.h_dim = h_dim
         self.dropout = nn.Dropout(0.2)
         self.emb = nn.Embedding(x_dim, e_dim, padding_idx=0)
-        self.lstm = nn.LSTM(e_dim, h_dim, bidirectional=True, batch_first=True)
+        self.lstm = nn.LSTM(e_dim, h_dim, bidirectional=True, batch_first=True)  #双向lstm
         self.fc = nn.Linear(h_dim * 2, o_dim)
         self.softmax = nn.Softmax(dim=1)
         self.log_softmax = nn.LogSoftmax(dim=1)

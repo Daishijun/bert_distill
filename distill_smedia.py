@@ -13,6 +13,18 @@ from ptbert_smedia import *
 from small import *
 from utils_smedia import *
 
+import argparse
+
+import json
+parser = argparse.ArgumentParser()
+parser.add_argument('--device',type=str,default='cuda:0',help='')
+
+
+args = parser.parse_args()
+
+# device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+device = torch.device(args.device if torch.cuda.is_available() else 'cpu')
+
 FTensor = torch.cuda.FloatTensor if USE_CUDA else torch.FloatTensor
 
 
@@ -91,9 +103,9 @@ if __name__ == '__main__':
         for i in range(0, len(x_tr), b_size):  #训练集
             model.zero_grad()
             bx = Variable(LTensor(x_tr[i:i + b_size]))
-            by = Variable(LTensor(y_tr[i:i + b_size]))  #bert预测的label
+            by = Variable(LTensor(y_tr[i:i + b_size]))  # 这里是真实标签
             bl = Variable(LTensor(l_tr[i:i + b_size]))
-            bt = Variable(FTensor(t_tr[i:i + b_size]))  #真实标签
+            bt = Variable(FTensor(t_tr[i:i + b_size]))  # 根据上面写入的文件里的，这里的是预测的结果
             py1, py2 = model(bx, bl)  #除非这个模型输出的时候，经过了log-softmax() ？？ 这个model返回的两个分别是？
             loss = alpha * ce_loss(py2, by) + (1-alpha) * mse_loss(py1, bt)  # in paper, only mse is used
             loss.backward()

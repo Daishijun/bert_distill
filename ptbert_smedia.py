@@ -42,74 +42,74 @@ class InputFeatures(object):
         self.label_id = label_id
 
 
-# class DataProcessor(object):
-#     def __init__(self, datapath):
-#         self.posflag = 'CB'
-#         self.negflag = 'NotCB'
-#         self.poskeys = ['withEnt', 'nonEnt']
-#         self.negkeys = ['pass']
-#         self.trainrate = 0.6
-#         self.validrate = 0.2
-#         self.trainset, self.validset, self.testset = self._split_train_dev_test(datapath)
-#
-#     def _load_samples(self, data_path):
-#         allpos = []
-#         allneg = []
-#         with open(data_path, 'r') as f:
-#             datajson = json.load(f)
-#
-#             if not datajson.get(self.posflag, None):
-#                 print('empty posflag')
-#                 pass
-#             elif not datajson.get(self.negflag, None):
-#                 print('empty negflag')
-#                 pass
-#             else:
-#                 for posk in self.poskeys:
-#                     poslist = datajson[self.posflag][posk]
-#                     for sampledict in poslist:
-#                         label, text = sampledict['label'], str(sampledict['title'])
-#                         allpos.append((label, text))
-#                 for negk in self.negkeys:
-#                     neglist = datajson[self.negflag][negk]
-#                     for sampledict in neglist:
-#                         label, text = sampledict['label'], sampledict['title']
-#                         allneg.append((label, text))
-#                 # random.shuffle(allpos)
-#                 # random.shuffle(allneg)
-#         return allpos, allneg
-#
-#     def _split_train_dev_test(self, data_path):
-#         allpos, allneg = self._load_samples(data_path)
-#         trainsample = allpos[:round(len(allpos)*self.trainrate)] + allneg[:round(len(allneg)*self.trainrate)]
-#         validsample = allpos[:round(len(allpos)*(self.trainrate+self.validrate))] + allneg[:round(len(allneg)*(self.trainrate+self.validrate))]
-#         testsample = allpos[round(len(allpos)*(self.trainrate+self.validrate)):] + allneg[round(len(allneg)*(self.trainrate+self.validrate)):]
-#         return trainsample, validsample, testsample
-#
-#     def get_train_examples(self):
-#         examples = []
-#         for i, (label, text) in enumerate(self.trainset):
-#             guid = "{0}-{1}-{2}".format('train', label, i)
-#             examples.append(InputExample(guid=guid, text=text, label=label))
-#         random.shuffle(examples)
-#         return examples
-#     def get_valid_examples(self):
-#         examples = []
-#         for i, (label, text) in enumerate(self.validset):
-#             guid = "{0}-{1}-{2}".format('train', label, i)
-#             examples.append(InputExample(guid=guid, text=text, label=label))
-#         random.shuffle(examples)
-#         return examples
-#     def get_test_examples(self):
-#         examples = []
-#         for i, (label, text) in enumerate(self.testset):
-#             guid = "{0}-{1}-{2}".format('train', label, i)
-#             examples.append(InputExample(guid=guid, text=text, label=label))
-#         random.shuffle(examples)
-#         return examples
-#
-#     def get_labels(self):
-#         return ['0', '1']
+class DataProcessor(object):
+    def __init__(self, datapath):
+        self.posflag = 'CB'
+        self.negflag = 'NotCB'
+        self.poskeys = ['withEnt', 'nonEnt']
+        self.negkeys = ['pass']
+        self.trainrate = 0.6
+        self.validrate = 0.2
+        self.trainset, self.validset, self.testset = self._split_train_dev_test(datapath)
+
+    def _load_samples(self, data_path):
+        allpos = []
+        allneg = []
+        with open(data_path, 'r') as f:
+            datajson = json.load(f)
+
+            if not datajson.get(self.posflag, None):
+                print('empty posflag')
+                pass
+            elif not datajson.get(self.negflag, None):
+                print('empty negflag')
+                pass
+            else:
+                for posk in self.poskeys:
+                    poslist = datajson[self.posflag][posk]
+                    for sampledict in poslist:
+                        label, text = sampledict['label'], str(sampledict['title'])
+                        allpos.append((label, text))
+                for negk in self.negkeys:
+                    neglist = datajson[self.negflag][negk]
+                    for sampledict in neglist:
+                        label, text = sampledict['label'], sampledict['title']
+                        allneg.append((label, text))
+                # random.shuffle(allpos)
+                # random.shuffle(allneg)
+        return allpos, allneg
+
+    def _split_train_dev_test(self, data_path):
+        allpos, allneg = self._load_samples(data_path)
+        trainsample = allpos[:round(len(allpos)*self.trainrate)] + allneg[:round(len(allneg)*self.trainrate)]
+        validsample = allpos[:round(len(allpos)*(self.trainrate+self.validrate))] + allneg[:round(len(allneg)*(self.trainrate+self.validrate))]
+        testsample = allpos[round(len(allpos)*(self.trainrate+self.validrate)):] + allneg[round(len(allneg)*(self.trainrate+self.validrate)):]
+        return trainsample, validsample, testsample
+
+    def get_train_examples(self):
+        examples = []
+        for i, (label, text) in enumerate(self.trainset):
+            guid = "{0}-{1}-{2}".format('train', label, i)
+            examples.append(InputExample(guid=guid, text=text, label=label))
+        random.shuffle(examples)
+        return examples
+    def get_valid_examples(self):
+        examples = []
+        for i, (label, text) in enumerate(self.validset):
+            guid = "{0}-{1}-{2}".format('train', label, i)
+            examples.append(InputExample(guid=guid, text=text, label=label))
+        random.shuffle(examples)
+        return examples
+    def get_test_examples(self):
+        examples = []
+        for i, (label, text) in enumerate(self.testset):
+            guid = "{0}-{1}-{2}".format('train', label, i)
+            examples.append(InputExample(guid=guid, text=text, label=label))
+        random.shuffle(examples)
+        return examples
+
+    def get_labels(self):
+        return ['0', '1']
 
 
 class DataProcessorv2(object):
