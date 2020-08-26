@@ -83,8 +83,8 @@ if __name__ == '__main__':
     with torch.no_grad():
         t_tr = np.vstack([teacher.predict(text) for text in tqdm(t_tr)])
         t_de = np.vstack([teacher.predict(text) for text in tqdm(t_de)])
-    with open('./data/cache/t_tr_smedia','wb') as fout: pickle.dump(t_tr,fout)
-    with open('./data/cache/t_de_smedia','wb') as fout: pickle.dump(t_de,fout)
+    with open('./data/cache/t_tr_smedia_rnntest','wb') as fout: pickle.dump(t_tr,fout)
+    with open('./data/cache/t_de_smedia_rnntest','wb') as fout: pickle.dump(t_de,fout)
     # with open('./data/cache/t_tr', 'rb') as fin:
     #     t_tr = pickle.load(fin)
     # with open('./data/cache/t_de', 'rb') as fin:
