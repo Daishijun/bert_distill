@@ -123,7 +123,7 @@ if __name__ == '__main__':
     print('thres: {}'.format(thresholds))
 
     print('+++Avg Inference Time : {}+++'.format(infertime / len(truths)))
-    np.savez('data/cache/prthres_distill_rnn_0817.npz', precision=precision, recall=recall, thres=thresholds)
+    np.savez('data/cache/prthres_distill_rnn_0818.npz', precision=precision, recall=recall, thres=thresholds)
     # np.savez('data/cache/prthres_distill_textcnn_0817.npz', precision=precision, recall=recall, thres=thresholds)
     print('p-r dump to npz ok')
 
