@@ -38,7 +38,8 @@ if __name__ == '__main__':
     # datapath = 'data/smediatest/CBaitdata-08-17.json'
     trainfile = 'data/smediatest/CBaitdata_merge_smedia_train.json'
     validfile = 'data/smediatest/CBaitdata_merge_0810-0816.json'
-    testfile = 'data/smediatest/CBaitdata-08-17.json'
+    # testfile = 'data/smediatest/CBaitdata-08-17.json'
+    testfile = 'data/smediatest/CBaitdata-08-18.json'
 
     x_len = 50  # ？？
     b_size = 64
