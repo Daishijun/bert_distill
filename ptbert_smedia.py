@@ -236,7 +236,7 @@ def compute_metrics(preds, labels):
 
 
 def main(bert_model='bert-base-cased', cache_dir=None,
-         max_seq=128, batch_size=64, num_epochs=15, lr=2e-5):
+         max_seq=128, batch_size=64, num_epochs=50, lr=2e-5):
     # datapath = 'data/smediatest/CBaitdata-08-17.json'
 
     datapath_train = 'data/smediatest/CBaitdata_merge_smedia_train.json'
@@ -294,7 +294,7 @@ def main(bert_model='bert-base-cased', cache_dir=None,
     avg_train_losses = []
     avg_valid_losses = []
 
-    early_stopping = EarlyStopping(patience=3, verbose=True)
+    early_stopping = EarlyStopping(patience=5, verbose=True)
 
     valid_losss_min = np.Inf
 
@@ -302,7 +302,7 @@ def main(bert_model='bert-base-cased', cache_dir=None,
         stopped_epoch = epoch
         model.train()
         tr_loss = 0
-        for step, batch in enumerate(tqdm(train_dataloader, desc='Iteration')):
+        for batch in tqdm(train_dataloader, desc='Iteration'):
             input_ids, input_mask, label_ids = tuple(t.to(device) for t in batch)
             loss = model(input_ids, input_mask, label_ids)
             loss.backward()  #计算梯度
@@ -367,7 +367,7 @@ def main(bert_model='bert-base-cased', cache_dir=None,
     #         preds.append(logits.detach().cpu().numpy())
     # preds = np.argmax(np.vstack(preds), axis=1)
     # print(compute_metrics(preds, eval_label_ids.numpy()))
-    torch.save(model, 'data/cache/model_smedia_smedia_earlyS')
+    torch.save(model, 'data/cache/model_smedia_smedia_earlyS_E50P5')
 
     print('bert fine-tune ok')
     # print('test-----')
