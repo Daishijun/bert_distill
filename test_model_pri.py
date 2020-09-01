@@ -54,8 +54,10 @@ if __name__ == '__main__':
     import pickle
     from tqdm import tqdm
 
-    datapath = 'data/smediatest/CBaitdata-08-17.json'
+    # datapath = 'data/smediatest/CBaitdata-08-17.json'
     # datapath = 'data/smediatest/CBaitdata-08-18.json'
+    datapath = 'data/smediatest/CBaitdata_merge_smedia_test_bert.json'
+
     x_len = 50  # ？？
     b_size = 64
     # lr = 0.002
