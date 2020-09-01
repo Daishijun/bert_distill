@@ -35,7 +35,8 @@ class Teacher(object):
         self.max_seq = max_seq
         self.tokenizer = BertTokenizer.from_pretrained(
             bert_model, do_lower_case=True)
-        self.model = torch.load('./data/cache/model_smedia_smedia')  #加载预训练好的bert
+        # self.model = torch.load('./data/cache/model_smedia_smedia')  #加载预训练好的bert
+        self.model = torch.load('./data/cache/model_smedia_smedia_epoch20')  #加载预训练好的bert 20个epoch的
         self.model.eval()  #只做预测不再调参
 
     def predict(self, text):
@@ -114,5 +115,5 @@ if __name__ == '__main__':
     print('thres: {}'.format(thresholds))
 
     print('+++Avg Inference Time : {}+++'.format(infertime/len(truths)))
-    np.savez('data/cache/prthres_bert_finetune_0818.npz', precision = precision, recall = recall, thres = thresholds)
+    np.savez('data/cache/prthres_bert_finetune_0818_epoch20.npz', precision = precision, recall = recall, thres = thresholds)
     print('p-r dump to npz ok')
