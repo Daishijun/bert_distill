@@ -16,6 +16,7 @@ from torch.nn import CrossEntropyLoss
 from tqdm import tqdm, trange
 from sklearn.metrics import f1_score, confusion_matrix
 import argparse
+from pytorchtools import EarlyStopping
 
 import json
 parser = argparse.ArgumentParser()
@@ -235,7 +236,7 @@ def compute_metrics(preds, labels):
 
 
 def main(bert_model='bert-base-cased', cache_dir=None,
-         max_seq=128, batch_size=64, num_epochs=20, lr=2e-5):
+         max_seq=128, batch_size=64, num_epochs=15, lr=2e-5):
     # datapath = 'data/smediatest/CBaitdata-08-17.json'
 
     datapath_train = 'data/smediatest/CBaitdata_merge_smedia_train.json'
@@ -275,19 +276,9 @@ def main(bert_model='bert-base-cased', cache_dir=None,
     train_data = TensorDataset(all_input_ids, all_input_mask, all_label_ids)
     train_sampler = RandomSampler(train_data)  #从数据集中随机采样
     train_dataloader = DataLoader(train_data, sampler=train_sampler, batch_size=batch_size)
-    model.train()
-    for _ in trange(num_epochs, desc='Epoch'):
-        tr_loss = 0
-        for step, batch in enumerate(tqdm(train_dataloader, desc='Iteration')):
-            input_ids, input_mask, label_ids = tuple(t.to(device) for t in batch)
-            loss = model(input_ids, input_mask, label_ids)
-            loss.backward()  #计算梯度
-            optimizer.step()  #单步优化
-            optimizer.zero_grad()  #梯度清空
-            tr_loss += loss.item()
-        print('tr_loss', tr_loss)
-    print('eval...')
-    # eval_examples = processor.get_valid_examples()
+    # model.train()
+
+    # valid data prepare
     eval_examples = processor_valid.get_example()
     eval_features = convert_examples_to_features(eval_examples, label_list, max_seq, tokenizer)
     eval_input_ids = torch.tensor([f.input_ids for f in eval_features], dtype=torch.long)
@@ -296,36 +287,108 @@ def main(bert_model='bert-base-cased', cache_dir=None,
     eval_data = TensorDataset(eval_input_ids, eval_input_mask, eval_label_ids)
     eval_sampler = SequentialSampler(eval_data)
     eval_dataloader = DataLoader(eval_data, sampler=eval_sampler, batch_size=batch_size)
-    model.eval()
-    preds = []
-    for batch in tqdm(eval_dataloader, desc='Evaluating'):
-        input_ids, input_mask, label_ids = tuple(t.to(device) for t in batch)
-        with torch.no_grad():  #不计算梯度
-            logits = model(input_ids, input_mask, None)  #这里不提供label
-            preds.append(logits.detach().cpu().numpy())
-    preds = np.argmax(np.vstack(preds), axis=1)
-    print(compute_metrics(preds, eval_label_ids.numpy()))
-    torch.save(model, 'data/cache/model_smedia_smedia_epoch20')
 
-    print('test-----')
-    test_examples = processor_test.get_example()
-    test_features = convert_examples_to_features(test_examples, label_list, max_seq, tokenizer)
-    test_input_ids = torch.tensor([f.input_ids for f in test_features], dtype=torch.long)
-    test_input_mask = torch.tensor([f.input_mask for f in test_features], dtype=torch.long)
-    test_label_ids = torch.tensor([f.label_id for f in test_features], dtype=torch.long)
-    test_data = TensorDataset(test_input_ids, test_input_mask, test_label_ids)
-    test_sampler = SequentialSampler(test_data)
-    test_dataloader = DataLoader(test_data, sampler=test_sampler, batch_size=batch_size)
-    model.eval()
-    preds = []
-    for batch in tqdm(test_dataloader, desc='Testing'):
-        input_ids, input_mask, label_ids = tuple(t.to(device) for t in batch)
-        with torch.no_grad():  # 不计算梯度
-            logits = model(input_ids, input_mask, None)  # 这里不提供label
-            preds.append(logits.detach().cpu().numpy())
-    preds = np.argmax(np.vstack(preds), axis=1)
-    print(compute_metrics(preds, eval_label_ids.numpy()))
-    print(confusion_matrix(y_pred=preds, y_true=eval_label_ids.numpy()))
+    #
+    train_losses = []
+    valid_losses = []
+    avg_train_losses = []
+    avg_valid_losses = []
+
+    early_stopping = EarlyStopping(patience=3, verbose=True)
+
+    valid_losss_min = np.Inf
+
+    for epoch in trange(num_epochs, desc='Epoch'):
+        stopped_epoch = epoch
+        model.train()
+        tr_loss = 0
+        for step, batch in enumerate(tqdm(train_dataloader, desc='Iteration')):
+            input_ids, input_mask, label_ids = tuple(t.to(device) for t in batch)
+            loss = model(input_ids, input_mask, label_ids)
+            loss.backward()  #计算梯度
+            optimizer.step()  #单步优化
+            optimizer.zero_grad()  #梯度清空
+            tr_loss += loss.item()
+            train_losses.append(loss.item())
+        print('tr_loss', tr_loss)
+
+        # valid for early stopping
+        model.eval()
+
+        for batch in tqdm(eval_dataloader, desc='Evaluating'):
+            input_ids, input_mask, label_ids = tuple(t.to(device) for t in batch)
+            with torch.no_grad():  # 不计算梯度
+                loss = model(input_ids, input_mask, label_ids)  # 这里不提供label
+                valid_losses.append(loss.item())
+
+        train_loss = np.average(train_losses)
+        valid_loss = np.average(valid_losses)
+        avg_train_losses.append(train_loss)
+        avg_valid_losses.append(valid_loss)
+
+        epoch_len = len(str(num_epochs))
+        print_msg = (f'[{epoch:>{epoch_len}}/{num_epochs:>{epoch_len}}] ' +
+                     f'train_loss: {train_loss:.5f} ' +
+                     f'valid_loss: {valid_loss:.5f}')
+        print(print_msg)
+
+        train_losses = []
+        valid_losses = []
+
+        if valid_loss<=valid_losss_min:
+            print('Validation loss decreased ({:.6f}-->{:.6f}) Saving model ...'.format(valid_losss_min, valid_loss))
+            torch.save(model.state_dict(), 'data/cache/bert_finetune_checkp.pt')
+            valid_losss_min = valid_loss
+
+        early_stopping(valid_loss, model)
+
+        if early_stopping.early_stop:
+            print('Early Stopping: {}'.format(epoch))
+            break
+
+    model.load_state_dict(torch.load('data/cache/bert_finetune_checkp.pt'))
+
+    # print('eval...')
+    # eval_examples = processor.get_valid_examples()
+    # eval_examples = processor_valid.get_example()
+    # eval_features = convert_examples_to_features(eval_examples, label_list, max_seq, tokenizer)
+    # eval_input_ids = torch.tensor([f.input_ids for f in eval_features], dtype=torch.long)
+    # eval_input_mask = torch.tensor([f.input_mask for f in eval_features], dtype=torch.long)
+    # eval_label_ids = torch.tensor([f.label_id for f in eval_features], dtype=torch.long)
+    # eval_data = TensorDataset(eval_input_ids, eval_input_mask, eval_label_ids)
+    # eval_sampler = SequentialSampler(eval_data)
+    # eval_dataloader = DataLoader(eval_data, sampler=eval_sampler, batch_size=batch_size)
+    # model.eval()
+    # preds = []
+    # for batch in tqdm(eval_dataloader, desc='Evaluating'):
+    #     input_ids, input_mask, label_ids = tuple(t.to(device) for t in batch)
+    #     with torch.no_grad():  #不计算梯度
+    #         logits = model(input_ids, input_mask, None)  #这里不提供label
+    #         preds.append(logits.detach().cpu().numpy())
+    # preds = np.argmax(np.vstack(preds), axis=1)
+    # print(compute_metrics(preds, eval_label_ids.numpy()))
+    torch.save(model, 'data/cache/model_smedia_smedia_earlyS')
+
+    print('bert fine-tune ok')
+    # print('test-----')
+    # test_examples = processor_test.get_example()
+    # test_features = convert_examples_to_features(test_examples, label_list, max_seq, tokenizer)
+    # test_input_ids = torch.tensor([f.input_ids for f in test_features], dtype=torch.long)
+    # test_input_mask = torch.tensor([f.input_mask for f in test_features], dtype=torch.long)
+    # test_label_ids = torch.tensor([f.label_id for f in test_features], dtype=torch.long)
+    # test_data = TensorDataset(test_input_ids, test_input_mask, test_label_ids)
+    # test_sampler = SequentialSampler(test_data)
+    # test_dataloader = DataLoader(test_data, sampler=test_sampler, batch_size=batch_size)
+    # model.eval()
+    # preds = []
+    # for batch in tqdm(test_dataloader, desc='Testing'):
+    #     input_ids, input_mask, label_ids = tuple(t.to(device) for t in batch)
+    #     with torch.no_grad():  # 不计算梯度
+    #         logits = model(input_ids, input_mask, None)  # 这里不提供label
+    #         preds.append(logits.detach().cpu().numpy())
+    # preds = np.argmax(np.vstack(preds), axis=1)
+    # print(compute_metrics(preds, eval_label_ids.numpy()))
+    # print(confusion_matrix(y_pred=preds, y_true=eval_label_ids.numpy()))
 
 
 
