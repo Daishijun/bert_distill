@@ -37,7 +37,8 @@ class Teacher(object):
             bert_model, do_lower_case=True)
         # self.model = torch.load('./data/cache/model_smedia_smedia')  #加载预训练好的bert
         # self.model = torch.load('./data/cache/model_smedia_smedia_epoch20')  #加载预训练好的bert 20个epoch的
-        self.model = torch.load('./data/cache/model_smedia_smedia_earlyS')  #加载预训练好的bert  early stop patience==3, 结果就保存了第一个。
+        # self.model = torch.load('./data/cache/model_smedia_smedia_earlyS')  #加载预训练好的bert  early stop patience==3, 结果就保存了第一个。
+        self.model = torch.load('./data/cache/model_smedia_smedia_earlyS_E50P5')  #加载预训练好的bert  early stop patience==5, 最多50个epoch。
         self.model.eval()  #只做预测不再调参
 
     def predict(self, text):
@@ -121,5 +122,5 @@ if __name__ == '__main__':
     # np.savez('data/cache/prthres_bert_finetune_0817_epoch20.npz', precision = precision, recall = recall, thres = thresholds)
     # np.savez('data/cache/prthres_bert_finetune_0818_epoch20.npz', precision = precision, recall = recall, thres = thresholds)
     # np.savez('data/cache/prthres_bert_finetune_test_epoch20.npz', precision = precision, recall = recall, thres = thresholds)
-    np.savez('data/cache/prthres_bert_finetune_test_bert_finetune_ES1.npz', precision = precision, recall = recall, thres = thresholds)
+    np.savez('data/cache/prthres_bert_finetune_test_bert_finetune_E50P5.npz', precision = precision, recall = recall, thres = thresholds)
     print('p-r dump to npz ok')
