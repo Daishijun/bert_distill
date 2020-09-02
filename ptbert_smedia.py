@@ -340,11 +340,11 @@ def main(bert_model='bert-base-cased', cache_dir=None,
             torch.save(model.state_dict(), 'data/cache/bert_finetune_checkp.pt')
             valid_losss_min = valid_loss
 
-        early_stopping(valid_loss, model)
+        # early_stopping(valid_loss, model)
 
-        if early_stopping.early_stop:
-            print('Early Stopping: {}'.format(epoch))
-            break
+        # if early_stopping.early_stop:
+        #     print('Early Stopping: {}'.format(epoch))
+        #     break
 
     model.load_state_dict(torch.load('data/cache/bert_finetune_checkp.pt'))
 
@@ -367,7 +367,7 @@ def main(bert_model='bert-base-cased', cache_dir=None,
     #         preds.append(logits.detach().cpu().numpy())
     # preds = np.argmax(np.vstack(preds), axis=1)
     # print(compute_metrics(preds, eval_label_ids.numpy()))
-    torch.save(model, 'data/cache/model_smedia_smedia_earlyS_E50P5')
+    torch.save(model, 'data/cache/model_smedia_smedia_E50')
 
     print('bert fine-tune ok')
     # print('test-----')
