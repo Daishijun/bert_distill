@@ -63,7 +63,7 @@ app.logger.setLevel(gunicorn_logger.level)
 @app.route('/clickbait_score', methods=['POST'])
 def predict():
     t1 = time.time()
-    profile = request.json
+    profile = json.loads(request.get_data())
     title = profile.get('title', '')
     if not title:
         logging.info('[entry_id]:{}, no title'.format(profile.get('entry_id', '')))
