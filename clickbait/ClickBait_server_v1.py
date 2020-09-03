@@ -96,6 +96,10 @@ def predict():
     t2 = time.time()  #得到title
     pred = teacher.predict(title)
     t3 = time.time()  #模型预测
+
+    print('type of pred : {} \t pred : {}'.format(type(pred), pred))
+
+
     resdict = {'score': float(pred[1])}  #softmax为1的概率
     if random.random() < 1:
         logging.info('get title time: {}'.format(t2-t1))
