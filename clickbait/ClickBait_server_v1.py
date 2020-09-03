@@ -97,8 +97,7 @@ def predict():
     pred = teacher.predict(title)
     t3 = time.time()  #模型预测
 
-    print('type of pred : {} \t pred : {}'.format(type(pred), pred))
-
+    pred = pred.flatten()
 
     resdict = {'score': float(pred[1])}  #softmax为1的概率
     if random.random() < 1:
