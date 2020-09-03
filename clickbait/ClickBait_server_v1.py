@@ -6,6 +6,8 @@ Create time: 2020-09-03 17:19
 IDE: PyCharm
 Introduction:
 """
+import sys
+sys.path.append('../')
 import logging
 import torch
 import torch.nn.functional as F
