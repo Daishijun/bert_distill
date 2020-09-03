@@ -26,8 +26,10 @@ parser.add_argument('--device',type=str,default='cuda:1',help='')
 args = parser.parse_args()
 
 # device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-device = torch.device(args.device if torch.cuda.is_available() else 'cpu')
+# device = torch.device(args.device if torch.cuda.is_available() else 'cpu')
 
+##add for test server
+device = torch.device('cpu')
 
 class InputExample(object):
     def __init__(self, guid, text, label=None):
