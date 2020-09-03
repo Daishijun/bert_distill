@@ -104,6 +104,10 @@ def predict():
         logging.info('get title time: {}'.format(t2-t1))
         logging.info('predict clickbait time: {}'.format(t3-t2))
         logging.info('total time: {}'.format(t3-t1))
+    print('get title time: {}'.format(t2 - t1))
+    print('predict clickbait time: {}'.format(t3 - t2))
+    print('total time: {}'.format(t3 - t1))
+
 
     return json.dumps(resdict)
 
