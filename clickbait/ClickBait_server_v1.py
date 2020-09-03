@@ -28,7 +28,7 @@ FTensor = torch.FloatTensor
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--flask_port',type=int,default=9015,help='')
-parser.add_argument('--modelpath', type=str, default='../data/cache/model_smedia_smedia_earlyS', help='load trained model path')
+parser.add_argument('--modelpath', type=str, default='data/cache/model_smedia_smedia_earlyS', help='load trained model path')
 args = parser.parse_args()
 
 class Teacher(object):
