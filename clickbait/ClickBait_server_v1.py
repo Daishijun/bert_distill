@@ -42,7 +42,8 @@ class Teacher(object):
         # self.model = torch.load('./data/cache/model_smedia_smedia')  #加载预训练好的bert
         # self.model = torch.load('./data/cache/model_smedia_smedia_epoch20')  #加载预训练好的bert 20个epoch的
         self.model = BertClassification.from_pretrained('bert-base-cased',
-                                               cache_dir=None, num_labels=2).load_state_dict(torch.load(args.modelpath))
+                                               cache_dir=None, num_labels=2)
+        self.model.load_state_dict(torch.load(args.modelpath))
         # self.model = torch.load('./data/cache/model_smedia_smedia_earlyS_E50P5')  #加载预训练好的bert  early stop patience==5, 最多50个epoch。
         self.model.eval()  #只做预测不再调参
 
