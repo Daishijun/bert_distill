@@ -23,14 +23,15 @@ device = torch.device('cpu')
 
 FTensor = torch.FloatTensor
 
-class Teacher(object):
+class Teacher(nn.Module):
     def __init__(self, bert_model='bert-base-cased', max_seq=128):
+        super(Teacher, self).__init__()
         self.max_seq = max_seq
         self.tokenizer = BertTokenizer.from_pretrained(
             bert_model, do_lower_case=True)
         # self.model = torch.load('./data/cache/model_smedia_smedia')  #加载预训练好的bert
-        # self.model = torch.load('./data/cache/model_smedia_smedia_epoch20')  #加载预训练好的bert 20个epoch的
-        self.model = torch.load('./data/cache/model_smedia_smedia_earlyS')  #加载预训练好的bert  early stop patience==3, 结果就保存了第一个。
+        self.model = torch.load('./data/cache/model_smedia_smedia_epoch20')  #加载预训练好的bert 20个epoch的
+        # self.model = torch.load('./data/cache/model_smedia_smedia_earlyS')  #加载预训练好的bert  early stop patience==3, 结果就保存了第一个。
         # self.model = torch.load('./data/cache/model_smedia_smedia_earlyS_E50P5')  #加载预训练好的bert  early stop patience==5, 最多50个epoch。
         self.model.eval()  #只做预测不再调参
 
@@ -66,7 +67,7 @@ class BertClassification(BertPreTrainedModel):
 if __name__ == '__main__':
     teacher = Teacher()
     print('save model params start')
-    torch.save(obj=teacher.model.statu_dict(), f='data/cache/resaved_params.pth')
+    torch.save(obj=teacher.model, f='data/cache/resaved_params.pth')
     print('resave ok')
 
     newmodel = BertClassification.from_pretrained('bert-base-cased',
