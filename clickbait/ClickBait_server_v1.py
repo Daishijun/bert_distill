@@ -18,7 +18,7 @@ import random
 from flask import Flask
 from flask import request
 from flask import make_response
-
+from ptbert_smedia import BertClassification
 import argparse
 
 from utils_smedia import *
@@ -38,7 +38,7 @@ class Teacher(object):
             bert_model, do_lower_case=True)
         # self.model = torch.load('./data/cache/model_smedia_smedia')  #加载预训练好的bert
         # self.model = torch.load('./data/cache/model_smedia_smedia_epoch20')  #加载预训练好的bert 20个epoch的
-        self.model = torch.load(args.modelpath)  #加载预训练好的bert  early stop patience==3, 结果就保存了第一个。
+        self.model = torch.load(args.modelpath)
         # self.model = torch.load('./data/cache/model_smedia_smedia_earlyS_E50P5')  #加载预训练好的bert  early stop patience==5, 最多50个epoch。
         self.model.eval()  #只做预测不再调参
 
