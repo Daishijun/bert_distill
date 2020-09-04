@@ -36,9 +36,9 @@ class Teacher(object):
         self.tokenizer = BertTokenizer.from_pretrained(
             bert_model, do_lower_case=True)
         # self.model = torch.load('./data/cache/model_smedia_smedia')  #加载预训练好的bert
-        # self.model = torch.load('./data/cache/model_smedia_smedia_epoch20')  #加载预训练好的bert 20个epoch的
+        self.model = torch.load('./data/cache/model_smedia_smedia_epoch20')  #加载预训练好的bert 20个epoch的
         # self.model = torch.load('./data/cache/model_smedia_smedia_earlyS')  #加载预训练好的bert  early stop patience==3, 结果就保存了第一个。
-        self.model = torch.load('./data/cache/model_smedia_smedia_earlyS_E50P5')  #加载预训练好的bert  early stop patience==5, 最多50个epoch。
+        # self.model = torch.load('./data/cache/model_smedia_smedia_earlyS_E50P5')  #加载预训练好的bert  early stop patience==5, 最多50个epoch。
         self.model.eval()  #只做预测不再调参
 
     def predict(self, text):
@@ -58,26 +58,8 @@ if __name__ == '__main__':
 
     # datapath = 'data/smediatest/CBaitdata-08-17.json'
     # datapath = 'data/smediatest/CBaitdata-08-18.json'
-    datapath = 'data/smediatest/CBaitdata_merge_smedia_test_bert.json'
-
-    x_len = 50  # ？？
-    b_size = 64
-    # lr = 0.002
-    # epochs = 10
-    # name = 'hotel'  # clothing, fruit, hotel, pda, shampoo
-    # alpha = 0.5  # portion of the original one-hot CE loss
-    # use_aug = False  # whether to use data augmentation
-    # n_iter = 5
-    # p_mask = 0.1  # 数据增强
-    # p_ng = 0.25  #
-    # ngram_range = (3, 6)
-    # teach_on_dev = True
-    # if not use_aug:
-    #     (x_tr, y_tr, t_tr), (x_de, y_de, t_de), (x_te, y_te, t_te), v_size = load_data(
-    #         datapath)  # 这个Word2vec得到的embedding没有用
-    # else:
-    #     # will introduce randomness, thus can't be loaded below
-    #     raise Exception
+    # datapath = 'data/smediatest/CBaitdata_merge_smedia_test_bert.json'
+    datapath = 'data/smediatest/CBaitdata_multi_2020-08-17_2020-08-18_onlyexagg.json'
 
 
     print('---test bert-finetune model---')
@@ -122,5 +104,6 @@ if __name__ == '__main__':
     # np.savez('data/cache/prthres_bert_finetune_0817_epoch20.npz', precision = precision, recall = recall, thres = thresholds)
     # np.savez('data/cache/prthres_bert_finetune_0818_epoch20.npz', precision = precision, recall = recall, thres = thresholds)
     # np.savez('data/cache/prthres_bert_finetune_test_epoch20.npz', precision = precision, recall = recall, thres = thresholds)
-    np.savez('data/cache/prthres_bert_finetune_test_bert_finetune_E50P5.npz', precision = precision, recall = recall, thres = thresholds)
+    # np.savez('data/cache/prthres_bert_finetune_test_bert_finetune_E50P5.npz', precision = precision, recall = recall, thres = thresholds)
+    np.savez('data/cache/prthres_bert_finetune_test_onlyexagg_bert_finetune_epoch20.npz', precision = precision, recall = recall, thres = thresholds)
     print('p-r dump to npz ok')
