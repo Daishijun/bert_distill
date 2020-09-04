@@ -59,7 +59,8 @@ if __name__ == '__main__':
     # datapath = 'data/smediatest/CBaitdata-08-17.json'
     # datapath = 'data/smediatest/CBaitdata-08-18.json'
     # datapath = 'data/smediatest/CBaitdata_merge_smedia_test_bert.json'
-    datapath = 'data/smediatest/CBaitdata_multi_2020-08-17_2020-08-18_onlyexagg.json'
+    # datapath = 'data/smediatest/CBaitdata_multi_2020-08-17_2020-08-18_onlyexagg.json'
+    datapath = 'data/smediatest/CBaitdata_multi_2020-08-17_2020-08-18_onlyincon.json'
 
 
     print('---test bert-finetune model---')
@@ -105,5 +106,6 @@ if __name__ == '__main__':
     # np.savez('data/cache/prthres_bert_finetune_0818_epoch20.npz', precision = precision, recall = recall, thres = thresholds)
     # np.savez('data/cache/prthres_bert_finetune_test_epoch20.npz', precision = precision, recall = recall, thres = thresholds)
     # np.savez('data/cache/prthres_bert_finetune_test_bert_finetune_E50P5.npz', precision = precision, recall = recall, thres = thresholds)
-    np.savez('data/cache/prthres_bert_finetune_test_onlyexagg_bert_finetune_epoch20.npz', precision = precision, recall = recall, thres = thresholds)
+    # np.savez('data/cache/prthres_bert_finetune_test_onlyexagg_bert_finetune_epoch20.npz', precision = precision, recall = recall, thres = thresholds)
+    np.savez('data/cache/prthres_bert_finetune_test_onlyincon_bert_finetune_epoch20.npz', precision = precision, recall = recall, thres = thresholds)
     print('p-r dump to npz ok')
