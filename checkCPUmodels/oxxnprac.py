@@ -242,3 +242,40 @@ if __name__ == '__main__':
     print('preds: {}'.format(preds))
     print('pred_class: {}'.format(pred_class))
     # print('equal or not: {}'.format(pred_class == preds))
+
+
+
+    ##
+    url = 'https://cms-a-5001.ams.op-mobile.opera.com/ao/news/entry_id/2e4c95f4200507en_ng'
+    import requests
+    import json
+    news = json.loads(requests.get(url).content)
+
+    title = news['title']
+    print('-----test news time ------')
+    print('title : {}'.format(title))
+    print('++time of teacher++')
+
+    t1 = time.time()
+    pred = teacher.predict(title)
+    t2 = time.time()
+    print('news torch predict time :{}'.format(t2-t1))
+
+    print('time of onnx')
+    tokens = teacher.tokenizer.tokenize(title)[:max_len]
+    input_ids = teacher.tokenizer.convert_tokens_to_ids(tokens)
+    input_mask = [1] * len(input_ids)
+    padding = [0] * (max_len - len(input_ids))
+    input_ids = torch.tensor([input_ids + padding], dtype=torch.long).to(device)
+    input_mask = torch.tensor([input_mask + padding], dtype=torch.long).to(device)
+    ort_inputs = {
+        'input_ids': input_ids.reshape(1, max_len).numpy(),
+        'input_mask': input_mask.reshape(1, max_len).numpy()
+    }
+    start = time.time()
+    ort_outputs = session.run(None, ort_inputs)
+    end = time.time()
+    print('news onnx predict time : {}'.format(end-start))
+
+
+
