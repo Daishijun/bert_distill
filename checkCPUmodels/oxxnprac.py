@@ -217,8 +217,8 @@ if __name__ == '__main__':
         input_ids = torch.tensor([input_ids + padding], dtype=torch.long).to(device)
         input_mask = torch.tensor([input_mask + padding], dtype=torch.long).to(device)
         ort_inputs = {
-            'input_ids': input_ids.reshape(1, max_len),
-            'input_mask': input_mask.reshape(1, max_len)
+            'input_ids': input_ids.reshape(1, max_len).numpy(),
+            'input_mask': input_mask.reshape(1, max_len).numpy()
         }
         start = time.time()
         ort_outputs = session.run(None, ort_inputs)
