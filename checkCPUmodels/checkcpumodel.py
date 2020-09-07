@@ -46,3 +46,7 @@ if __name__ == '__main__':
     print('load resave params ...')
     newmodel.load_state_dict(torch.load('../data/cache/resaved_params.pth', map_location=torch.device('cpu')))
     print('load ok')
+
+    print('save to cpu')
+    torch.save(obj=newmodel.state_dict(), f='../data/cache/cpucache/resaved_params_cpu.path')
+    print('save to cpu ok')
