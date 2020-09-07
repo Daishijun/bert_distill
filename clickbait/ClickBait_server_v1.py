@@ -28,7 +28,7 @@ FTensor = torch.FloatTensor
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--flask_port',type=int,default=9015,help='')
-parser.add_argument('--modelpath', type=str, default='../data/cache/resaved_params.pth', help='load trained model path')
+parser.add_argument('--modelpath', type=str, default='../data/cache/cpucache/resaved_params_cpu.path', help='load trained model path')
 args = parser.parse_args()
 
 from transformers import BertModel, BertPreTrainedModel
