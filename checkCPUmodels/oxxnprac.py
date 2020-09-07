@@ -233,7 +233,7 @@ if __name__ == '__main__':
             counti +=1
     print("OnnxRuntime cpu Inference time = {} ms".format(format(sum(latency) * 1000 / len(latency), '.2f')))
 
-    print('onnx output of berclassification: {}'.format(outpus))
+    # print('onnx output of berclassification: {}'.format(outpus))
     print('type of output: {}'.format(type(outpus)))
 
     outpus = np.vstack(outpus)
@@ -241,4 +241,4 @@ if __name__ == '__main__':
 
     print('preds: {}'.format(preds))
     print('pred_class: {}'.format(pred_class))
-    print('equal or not: {}'.format(pred_class == preds))
+    # print('equal or not: {}'.format(pred_class == preds))
