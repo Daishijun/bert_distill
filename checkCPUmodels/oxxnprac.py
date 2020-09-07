@@ -209,7 +209,7 @@ if __name__ == '__main__':
 
     session = onnxruntime.InferenceSession(export_model_path, sess_options, providers=['CPUExecutionProvider'])
     latency = []
-    for text in texts:
+    for text in tqdm(texts):
         tokens = teacher.tokenizer.tokenize(text)[:max_len]
         input_ids = teacher.tokenizer.convert_tokens_to_ids(tokens)
         input_mask = [1] * len(input_ids)
