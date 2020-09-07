@@ -18,6 +18,7 @@ import torch
 from torch import nn
 import torch.nn.functional as F
 from tqdm import tqdm
+from sklearn.metrics import confusion_matrix
 
 device = torch.device('cpu')
 
@@ -124,11 +125,26 @@ if __name__ == '__main__':
 
     starttime = time.time()
     with torch.no_grad():
-        # pred = np.vstack([teacher.predict(text) for text in tqdm(texts)])
-        pred = teacher.predict(texts[0])
+        pred = np.vstack([teacher.predict(text) for text in tqdm(texts)])
+        # pred = teacher.predict(texts[0])
     endtime = time.time()
     infertime = endtime - starttime
 
-    print('pred: {}'.format(pred))
-    print('label: {}'.format(truths[0]))
-    print('infertime: {}'.format(infertime))
+    pred_class = np.argmax(np.vstack(pred), axis=1)
+
+    # print('pred: {}'.format(pred))
+    # print('label: {}'.format(truths[0]))
+    # print('infertime: {}'.format(infertime))
+    truths_cm = np.array(list(truths))
+    print('confusion matrix')
+    print(confusion_matrix(y_true=truths, y_pred=pred_class))
+
+    truths = np.array(list(truths)).flatten()
+    pred_class = pred_class.flatten()
+    index = np.arange(0, len(truths))
+    errinds = index[truths != pred_class]
+
+    print('err nums: {}'.format(len(errinds)))
+    print('errinds: {}'.format(errinds))
+
+    print('+++Avg Inference Time : {}+++'.format(infertime/len(truths)))
