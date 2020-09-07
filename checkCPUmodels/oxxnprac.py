@@ -236,6 +236,7 @@ if __name__ == '__main__':
     print('onnx output of berclassification: {}'.format(outpus))
     print('type of output: {}'.format(type(outpus)))
 
+    outpus = np.vstack(outpus)
     preds = np.argmax(np.vstack(outpus), axis=1)
 
     print('preds: {}'.format(preds))
