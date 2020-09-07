@@ -44,5 +44,5 @@ if __name__ == '__main__':
                                                cache_dir=None, num_labels=2)
     newmodel.to(device)
     print('load resave params ...')
-    newmodel.load_state_dict(torch.load('data/cache/resaved_params.pth'))
+    newmodel.load_state_dict(torch.load('../data/cache/resaved_params.pth'))
     print('load ok')
