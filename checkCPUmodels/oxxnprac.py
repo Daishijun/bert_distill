@@ -123,6 +123,8 @@ if __name__ == '__main__':
     truths, texts = zip(*test_label_text_list)
     print('length of truths: {}\t of texts: {}'.format(len(truths), len(texts)))
 
+    truths = truths[:100]
+    texts = texts[:100]
     starttime = time.time()
     with torch.no_grad():
         pred = np.vstack([teacher.predict(text) for text in tqdm(texts)])
