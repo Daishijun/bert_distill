@@ -45,8 +45,8 @@ class BertClassification(BertPreTrainedModel):
         if label_ids is not None:
             loss_fct = CrossEntropyLoss()
             return loss_fct(logits.view(-1, self.num_labels), label_ids.view(-1))
-        return logits
-        # return F.softmax(logits, dim=1).detach().cpu().numpy()
+        # return logits
+        return F.softmax(logits, dim=1)
 
 class Teacher(object):
     def __init__(self, bert_model='bert-base-cased', trainedmodel=None, max_seq=128):
@@ -64,8 +64,8 @@ class Teacher(object):
         input_ids = torch.tensor([input_ids + padding], dtype=torch.long).to(device)
         input_mask = torch.tensor([input_mask + padding], dtype=torch.long).to(device)
         logits = self.model(input_ids, input_mask, None)
-        return F.softmax(logits, dim=1).detach().cpu().numpy()
-        # return logits
+        # return F.softmax(logits, dim=1).detach().cpu().numpy()
+        return logits.detach().cpu().numpy()
 
 class DataProcessorv2(object):
     def __init__(self, file, actor):
