@@ -13,6 +13,7 @@ import json
 import random
 import time
 import numpy as np
+import os
 
 import torch
 from torch import nn
@@ -150,3 +151,48 @@ if __name__ == '__main__':
     print('errinds: {}'.format(errinds))
 
     print('+++Avg Inference Time : {}+++'.format(infertime/len(truths)))
+
+    ## export to onnx
+    output_dir = '../data/cache/cpucache/onnx_models'
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+    export_model_path = os.path.join(output_dir, 'resaved_params_E20.onnx')
+
+    text = texts[0]
+    max_len = 128
+    tokens = teacher.tokenizer.tokenize(text)[:max_len]
+    input_ids = teacher.tokenizer.convert_tokens_to_ids(tokens)
+    input_mask = [1] * len(input_ids)
+    padding = [0] * (max_len - len(input_ids))
+    input_ids = torch.tensor([input_ids + padding], dtype=torch.long).to(device)
+    input_mask = torch.tensor([input_mask + padding], dtype=torch.long).to(device)
+
+    inputs = {
+        'input_ids': input_ids.reshape(1, max_len),
+        'input_mask': input_mask.reshape(1, max_len),
+        'label_ids': None
+    }
+
+    model = newmodel
+    model.eval()
+    model.to(device)
+
+    enable_overwrite = True
+    if enable_overwrite or not os.path.exists(export_model_path):
+        with torch.no_grad():
+            symbolic_names = {0: 'batch_size', 1: 'max_seq_len'}
+            torch.onnx.export(model,
+                              args=tuple(inputs.values()),
+                              f=export_model_path,
+
+                              opset_version=11,
+                              do_constant_folding=True,
+                              input_names=['input_ids', 'input_mask', 'label_ids'],
+                              output_names=['logits'],
+                              dynamic_axes={'input_ids': symbolic_names,
+                                            'input_mask': symbolic_names,
+                                            'label_ids': symbolic_names,
+                                            'logits':symbolic_names
+                                            }
+                              )
+            print('Model exported at {}'.format(export_model_path))
