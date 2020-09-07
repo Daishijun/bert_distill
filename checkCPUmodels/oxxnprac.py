@@ -130,4 +130,5 @@ if __name__ == '__main__':
     infertime = endtime - starttime
 
     print('pred: {}'.format(pred))
+    print('label: {}'.format(truths[0]))
     print('infertime: {}'.format(infertime))
