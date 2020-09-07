@@ -109,7 +109,7 @@ def predict():
 
     t4 = time.time()  # onnx 模型预测
 
-    pred =ort_outputs.numpy().flatten()
+    pred = np.array(ort_outputs).flatten()
 
 
     resdict = {'score': float(pred[1])}  #softmax为1的概率
