@@ -45,8 +45,8 @@ class BertClassification(BertPreTrainedModel):
         if label_ids is not None:
             loss_fct = CrossEntropyLoss()
             return loss_fct(logits.view(-1, self.num_labels), label_ids.view(-1))
-        # return logits
-        return F.softmax(logits, dim=1).detach().cpu().numpy()
+        return logits
+        # return F.softmax(logits, dim=1).detach().cpu().numpy()
 
 class Teacher(object):
     def __init__(self, bert_model='bert-base-cased', trainedmodel=None, max_seq=128):
@@ -64,8 +64,8 @@ class Teacher(object):
         input_ids = torch.tensor([input_ids + padding], dtype=torch.long).to(device)
         input_mask = torch.tensor([input_mask + padding], dtype=torch.long).to(device)
         logits = self.model(input_ids, input_mask, None)
-        # return F.softmax(logits, dim=1).detach().cpu().numpy()
-        return logits
+        return F.softmax(logits, dim=1).detach().cpu().numpy()
+        # return logits
 
 class DataProcessorv2(object):
     def __init__(self, file, actor):
@@ -211,6 +211,8 @@ if __name__ == '__main__':
 
     session = onnxruntime.InferenceSession(export_model_path, sess_options, providers=['CPUExecutionProvider'])
     latency = []
+    outpus = []
+    counti = 0
     for text in tqdm(texts):
         tokens = teacher.tokenizer.tokenize(text)[:max_len]
         input_ids = teacher.tokenizer.convert_tokens_to_ids(tokens)
@@ -225,4 +227,11 @@ if __name__ == '__main__':
         start = time.time()
         ort_outputs = session.run(None, ort_inputs)
         latency.append(time.time() - start)
+        outpus.append(ort_outputs)
+        if counti == 0:
+            print('ort_outputs: {}'.format(ort_outputs))
+            counti +=1
     print("OnnxRuntime cpu Inference time = {} ms".format(format(sum(latency) * 1000 / len(latency), '.2f')))
+
+    print('onnx output of berclassification: {}'.format(outpus))
+    print('type of output: {}'.format(type(outpus)))
