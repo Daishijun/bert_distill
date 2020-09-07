@@ -38,7 +38,7 @@ class BertClassification(BertPreTrainedModel):
         self.classifier = nn.Linear(config.hidden_size, num_labels)
         self.init_weights()
 
-    def forward(self, input_ids, input_mask, label_ids):
+    def forward(self, input_ids, input_mask, label_ids=None):
         _, pooled_output = self.bert(input_ids, None, input_mask)
         pooled_output = self.dropout(pooled_output)
         logits = self.classifier(pooled_output)
@@ -169,8 +169,7 @@ if __name__ == '__main__':
 
     inputs = {
         'input_ids': input_ids.reshape(1, max_len),
-        'input_mask': input_mask.reshape(1, max_len),
-        'label_ids': None
+        'input_mask': input_mask.reshape(1, max_len)
     }
 
     model = newmodel
@@ -187,11 +186,10 @@ if __name__ == '__main__':
 
                               opset_version=11,
                               do_constant_folding=True,
-                              input_names=['input_ids', 'input_mask', 'label_ids'],
+                              input_names=['input_ids', 'input_mask'],
                               output_names=['logits'],
                               dynamic_axes={'input_ids': symbolic_names,
                                             'input_mask': symbolic_names,
-                                            'label_ids': symbolic_names,
                                             'logits':symbolic_names
                                             }
                               )
