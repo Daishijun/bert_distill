@@ -194,3 +194,34 @@ if __name__ == '__main__':
                                             }
                               )
             print('Model exported at {}'.format(export_model_path))
+
+    ## infer onnx
+    import psutil
+
+    os.environ["OMP_NUM_THREADS"] = str(psutil.cpu_count(logical=True))
+    os.environ["OMP_WAIT_POLICY"] = 'ACTIVE'
+
+    import onnxruntime
+    if 'CUDAExecutionProvider' in onnxruntime.get_available_providers():
+        print("warning: onnxruntime-gpu is not built with OpenMP. You might try onnxruntime package to test CPU inference.")
+    sess_options = onnxruntime.SessionOptions()
+    sess_options.optimized_model_filepath = os.path.join(output_dir, "optimized_model_cpu.onnx")
+
+    session = onnxruntime.InferenceSession(export_model_path, sess_options, providers=['CPUExecutionProvider'])
+    latency = []
+    for text in texts:
+        tokens = teacher.tokenizer.tokenize(text)[:max_len]
+        input_ids = teacher.tokenizer.convert_tokens_to_ids(tokens)
+        input_mask = [1] * len(input_ids)
+        padding = [0] * (max_len - len(input_ids))
+        input_ids = torch.tensor([input_ids + padding], dtype=torch.long).to(device)
+        input_mask = torch.tensor([input_mask + padding], dtype=torch.long).to(device)
+        ort_inputs = {
+            'input_ids': input_ids.reshape(1, max_len),
+            'input_mask': input_mask.reshape(1, max_len)
+        }
+        start = time.time()
+        ort_outputs = session.run(None, ort_inputs)
+        latency.append(time.time() - start)
+    print("OnnxRuntime cpu Inference time = {} ms".format(format(sum(latency) * 1000 / len(latency), '.2f')))
+
