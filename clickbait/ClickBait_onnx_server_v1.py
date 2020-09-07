@@ -83,6 +83,32 @@ tokenizer = BertTokenizer.from_pretrained(
             'bert-base-cased', do_lower_case=True)
 max_seq = 128
 
+## test predict time
+url = 'https://cms-a-5001.ams.op-mobile.opera.com/ao/news/entry_id/2e4c95f4200507en_ng'
+import requests
+import json
+news = json.loads(requests.get(url).content)
+max_len = 128
+title = news['title']
+print('-----test news time ------')
+tokens = tokenizer.tokenize(title)[:max_len]
+input_ids = tokenizer.convert_tokens_to_ids(tokens)
+input_mask = [1] * len(input_ids)
+padding = [0] * (max_len - len(input_ids))
+input_ids = torch.tensor([input_ids + padding], dtype=torch.long).to(device)
+input_mask = torch.tensor([input_mask + padding], dtype=torch.long).to(device)
+ort_inputs = {
+    'input_ids': input_ids.reshape(1, max_len).numpy(),
+    'input_mask': input_mask.reshape(1, max_len).numpy()
+}
+start = time.time()
+ort_outputs = session.run(None, ort_inputs)
+end = time.time()
+print('news onnx predict time : {}'.format(end-start))
+
+
+
+
 @app.route('/clickbait_score', methods=['POST'])
 def predict():
     t1 = time.time()
