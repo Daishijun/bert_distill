@@ -179,23 +179,23 @@ if __name__ == '__main__':
     model.to(device)
 
     enable_overwrite = True
-    if enable_overwrite or not os.path.exists(export_model_path):
-        with torch.no_grad():
-            symbolic_names = {0: 'batch_size', 1: 'max_seq_len'}
-            torch.onnx.export(model,
-                              args=tuple(inputs.values()),
-                              f=export_model_path,
-
-                              opset_version=11,
-                              do_constant_folding=True,
-                              input_names=['input_ids', 'input_mask'],
-                              output_names=['logits'],
-                              dynamic_axes={'input_ids': symbolic_names,
-                                            'input_mask': symbolic_names,
-                                            'logits':symbolic_names
-                                            }
-                              )
-            print('Model exported at {}'.format(export_model_path))
+    # if enable_overwrite or not os.path.exists(export_model_path):
+    #     with torch.no_grad():
+    #         symbolic_names = {0: 'batch_size', 1: 'max_seq_len'}
+    #         torch.onnx.export(model,
+    #                           args=tuple(inputs.values()),
+    #                           f=export_model_path,
+    #
+    #                           opset_version=11,
+    #                           do_constant_folding=True,
+    #                           input_names=['input_ids', 'input_mask'],
+    #                           output_names=['logits'],
+    #                           dynamic_axes={'input_ids': symbolic_names,
+    #                                         'input_mask': symbolic_names,
+    #                                         'logits':symbolic_names
+    #                                         }
+    #                           )
+    #         print('Model exported at {}'.format(export_model_path))
 
     ## infer onnx
     import psutil
@@ -213,7 +213,7 @@ if __name__ == '__main__':
     latency = []
     outpus = []
     counti = 0
-    for text in tqdm(texts):
+    for text in tqdm(texts[:1]):
         tokens = teacher.tokenizer.tokenize(text)[:max_len]
         input_ids = teacher.tokenizer.convert_tokens_to_ids(tokens)
         input_mask = [1] * len(input_ids)
