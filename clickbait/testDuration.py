@@ -10,6 +10,7 @@ Introduction:
 import requests
 import json
 import time
+from tqdm import tqdm
 
 cms_crawl_Cb_file = '/data02/shijund/ClickBaitData/data/CBdata/cms_crawl_CBdata_0501-0824.txt'
 cms_smedia_Cb_file = '/data02/shijund/ClickBaitData/data/CBdata/cms_smedia_CBdata_0501-0824.txt'
@@ -37,7 +38,7 @@ preds_smedia = []
 
 api = 'http://0.0.0.0:9025/clickbait_score'
 
-for ent in smedia_ids:
+for ent in tqdm(smedia_ids):
     news = json.loads(requests.get(url+ent).content)
     newsj = json.dumps(news)
     t1 = time.time()
@@ -50,7 +51,7 @@ print('avg smedia duration: {}'.format(sum(durationlist_smedia)/len(durationlist
 
 durationlist_crawl= []
 preds_crawl = []
-for ent in crawl_ids:
+for ent in tqdm(crawl_ids):
     news = json.loads(requests.get(url+ent).content)
     newsj = json.dumps(news)
     t1 = time.time()
