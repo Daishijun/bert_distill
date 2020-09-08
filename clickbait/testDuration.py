@@ -60,3 +60,27 @@ for ent in tqdm(crawl_ids[:100]):
     preds_crawl.append(json.loads(resq.content).get('score',0))
 
 print('avg crawl duration: {}'.format(sum(durationlist_crawl)/len(durationlist_crawl)))
+
+preds_smedia = list(map(lambda x: 1 if x>=0.5 else 0, preds_smedia))
+print('smedia pred 0 count: {}'.format(preds_smedia.count(0)))
+
+preds_crawl = list(map(lambda x: 1 if x>=0.5 else 0, preds_crawl))
+print('crawl pred 0 count :{}'.format(preds_crawl.count(0)))
+
+
+# collect missed ids
+smedia_resids = []
+for ind in range(len(preds_smedia)):
+    if preds_smedia[ind] == 0:
+        smedia_resids.append(smedia_ids[ind])
+
+crawl_resids = []
+for ind in range(len(preds_crawl)):
+    if preds_crawl[ind] == 0:
+        crawl_resids.append(crawl_ids[ind])
+
+with open('smedia_CBmissed_ids.txt', 'w') as wf:
+    wf.write('\n'.join(smedia_resids))
+
+with open('crawl_CBmissed_ids.txt', 'w') as wf:
+    wf.write('\n'.join(crawl_resids))
