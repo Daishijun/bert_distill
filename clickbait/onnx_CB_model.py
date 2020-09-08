@@ -29,7 +29,7 @@ parser.add_argument('--modeldir', type=str, default='../data/cache/cpucache/onnx
 parser.add_argument('--modelfilename', type=str, default='resaved_params_E20.onnx', help='load trained model name')
 args = parser.parse_args()
 
-os.environ["OMP_NUM_THREADS"] = str(20)
+os.environ["OMP_NUM_THREADS"] = str(40)
 os.environ["OMP_WAIT_POLICY"] = 'ACTIVE'
 
 class ClickBaitOnnx():
