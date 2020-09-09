@@ -36,9 +36,10 @@ class Teacher(object):
         self.tokenizer = BertTokenizer.from_pretrained(
             bert_model, do_lower_case=True)
         # self.model = torch.load('./data/cache/model_smedia_smedia')  #加载预训练好的bert
-        self.model = torch.load('./data/cache/model_smedia_smedia_epoch20')  #加载预训练好的bert 20个epoch的
+        # self.model = torch.load('./data/cache/model_smedia_smedia_epoch20')  #加载预训练好的bert 20个epoch的
         # self.model = torch.load('./data/cache/model_smedia_smedia_earlyS')  #加载预训练好的bert  early stop patience==3, 结果就保存了第一个。
         # self.model = torch.load('./data/cache/model_smedia_smedia_earlyS_E50P5')  #加载预训练好的bert  early stop patience==5, 最多50个epoch。
+        self.model = torch.load('./data/cache/model_smedia_smedia_E50')
         self.model.eval()  #只做预测不再调参
 
     def predict(self, text):
@@ -58,9 +59,9 @@ if __name__ == '__main__':
 
     # datapath = 'data/smediatest/CBaitdata-08-17.json'
     # datapath = 'data/smediatest/CBaitdata-08-18.json'
-    # datapath = 'data/smediatest/CBaitdata_merge_smedia_test_bert.json'
+    datapath = 'data/smediatest/CBaitdata_merge_smedia_test_bert.json'
     # datapath = 'data/smediatest/CBaitdata_multi_2020-08-17_2020-08-18_onlyexagg.json'
-    datapath = 'data/smediatest/CBaitdata_multi_2020-08-17_2020-08-18_onlyincon.json'
+    # datapath = 'data/smediatest/CBaitdata_multi_2020-08-17_2020-08-18_onlyincon.json'
 
 
     print('---test bert-finetune model---')
@@ -107,5 +108,6 @@ if __name__ == '__main__':
     # np.savez('data/cache/prthres_bert_finetune_test_epoch20.npz', precision = precision, recall = recall, thres = thresholds)
     # np.savez('data/cache/prthres_bert_finetune_test_bert_finetune_E50P5.npz', precision = precision, recall = recall, thres = thresholds)
     # np.savez('data/cache/prthres_bert_finetune_test_onlyexagg_bert_finetune_epoch20.npz', precision = precision, recall = recall, thres = thresholds)
-    np.savez('data/cache/prthres_bert_finetune_test_onlyincon_bert_finetune_epoch20.npz', precision = precision, recall = recall, thres = thresholds)
+    # np.savez('data/cache/prthres_bert_finetune_test_onlyincon_bert_finetune_epoch20.npz', precision = precision, recall = recall, thres = thresholds)
+    np.savez('data/cache/prthres_bert_finetune_test_epoch50.npz', precision = precision, recall = recall, thres = thresholds)
     print('p-r dump to npz ok')
