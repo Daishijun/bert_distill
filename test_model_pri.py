@@ -109,5 +109,5 @@ if __name__ == '__main__':
     # np.savez('data/cache/prthres_bert_finetune_test_bert_finetune_E50P5.npz', precision = precision, recall = recall, thres = thresholds)
     # np.savez('data/cache/prthres_bert_finetune_test_onlyexagg_bert_finetune_epoch20.npz', precision = precision, recall = recall, thres = thresholds)
     # np.savez('data/cache/prthres_bert_finetune_test_onlyincon_bert_finetune_epoch20.npz', precision = precision, recall = recall, thres = thresholds)
-    np.savez('data/cache/prthres_bert_finetune_test_epoch50.npz', precision = precision, recall = recall, thres = thresholds)
+    np.savez('data/cache/prthres_bert_finetune_test_epoch50_withpredtruth.npz', precision = precision, recall = recall, thres = thresholds, preds=pred_scores, truths=truths)
     print('p-r dump to npz ok')
