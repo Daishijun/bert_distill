@@ -20,9 +20,7 @@ from onnx_CB_model import ClickBaitOnnx
 from flask import Flask
 from flask import request
 import argparse
-parser = argparse.ArgumentParser()
-parser.add_argument('--flask_port',type=int,default=9025,help='')
-args = parser.parse_args()
+
 
 model = ClickBaitOnnx()
 
@@ -53,4 +51,8 @@ def predict_CB():
     return json.dumps(resdict)
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--flask_port', type=int, default=9025, help='')
+    args = parser.parse_args()
     app.run(host='0.0.0.0', port=args.flask_port)
+
