@@ -13,9 +13,6 @@ import time
 from tqdm import tqdm
 
 
-import importlib,sys
-importlib.reload(sys)
-
 
 # cms_crawl_Cb_file = '/data02/shijund/ClickBaitData/data/CBdata/cms_crawl_CBdata_0501-0824.txt'
 cms_crawl_Cb_file = '/home/sdev/CBdata/cms_crawl_CBdata_0501-0824.txt'
@@ -23,14 +20,14 @@ cms_crawl_Cb_file = '/home/sdev/CBdata/cms_crawl_CBdata_0501-0824.txt'
 cms_smedia_Cb_file = '/home/sdev/CBdata/cms_smedia_CBdata_0501-0824.txt'
 
 crawl_ids = []
-with open(cms_crawl_Cb_file, 'r') as f:
+with open(cms_crawl_Cb_file, 'r', encoding='utf-8') as f:
     for line in f.readlines():
         if len(line.strip().strip('\n').split('\t') ) <3:
             continue
         crawl_ids.append(line.strip().strip('\n').split('\t')[-1])
 
 smedia_ids = []
-with open(cms_smedia_Cb_file, 'r') as f:
+with open(cms_smedia_Cb_file, 'r', encoding='utf-8') as f:
     for line in f.readlines():
         if len(line.strip().strip('\n').split('\t') ) <3:
             continue
