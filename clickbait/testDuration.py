@@ -12,8 +12,10 @@ import json
 import time
 from tqdm import tqdm
 
-cms_crawl_Cb_file = '/data02/shijund/ClickBaitData/data/CBdata/cms_crawl_CBdata_0501-0824.txt'
-cms_smedia_Cb_file = '/data02/shijund/ClickBaitData/data/CBdata/cms_smedia_CBdata_0501-0824.txt'
+# cms_crawl_Cb_file = '/data02/shijund/ClickBaitData/data/CBdata/cms_crawl_CBdata_0501-0824.txt'
+cms_crawl_Cb_file = '/home/sdev/CBdata/cms_crawl_CBdata_0501-0824.txt'
+# cms_smedia_Cb_file = '/data02/shijund/ClickBaitData/data/CBdata/cms_smedia_CBdata_0501-0824.txt'
+cms_smedia_Cb_file = '/home/sdev/CBdata/cms_smedia_CBdata_0501-0824.txt'
 
 crawl_ids = []
 with open(cms_crawl_Cb_file, 'r') as f:
