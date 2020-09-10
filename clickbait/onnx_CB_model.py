@@ -30,7 +30,7 @@ parser.add_argument('--modelfilename', type=str, default='resaved_params_E20.onn
 args = parser.parse_args()
 
 # os.environ["OMP_NUM_THREADS"] = str(psutil.cpu_count(logical=True))
-os.environ["OMP_NUM_THREADS"] = str(40)
+os.environ["OMP_NUM_THREADS"] = str(20)
 os.environ["OMP_WAIT_POLICY"] = 'ACTIVE'
 
 class ClickBaitOnnx():
