@@ -15,7 +15,7 @@ from tqdm import tqdm
 
 import importlib,sys
 importlib.reload(sys)
-sys.setdefaultencoding('utf-8')
+
 
 # cms_crawl_Cb_file = '/data02/shijund/ClickBaitData/data/CBdata/cms_crawl_CBdata_0501-0824.txt'
 cms_crawl_Cb_file = '/home/sdev/CBdata/cms_crawl_CBdata_0501-0824.txt'
