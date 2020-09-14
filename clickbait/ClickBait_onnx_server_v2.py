@@ -14,14 +14,14 @@ import random
 import time
 import numpy as np
 import os
-import logging
+from util_log import LogInit
 from onnx_CB_model import ClickBaitOnnx
 
 from flask import Flask
 from flask import request
 import argparse
 
-
+LOGGING_CB = LogInit('ClickBait_ONNX_Server_Logs')
 model = ClickBaitOnnx()
 
 app = Flask(__name__)
@@ -32,7 +32,7 @@ def predict_CB():
     profile = json.loads(request.get_data())
     title = profile.get('title', '')
     if not title:
-        logging.info('[entry_id]:{}, no title'.format(profile.get('entry_id', '')))
+        LOGGING_CB.info('[entry_id]:{}, no title'.format(profile.get('entry_id', '')))
         return json.dumps({})
     t2 = time.time()  # 得到title
 
@@ -43,10 +43,11 @@ def predict_CB():
     resdict = {'score': float(pred[1])}
     t4 = time.time()
 
-    print('get title time: {}'.format(t2 - t1))
-    print('predict clickbait time : {}'.format(duration))
-    print('prepare & predict clickbait time : {}'.format(t3-t2))
-    print('total time: {}'.format(t4 - t1))
+    LOGGING_CB.info('get title time: {}'.format(t2 - t1))
+    LOGGING_CB.info('predict clickbait time : {}'.format(duration))
+    LOGGING_CB.info('prepare & predict clickbait time : {}'.format(t3-t2))
+    LOGGING_CB.info('total time: {}'.format(t4 - t1))
+    LOGGING_CB.info('return : {}'.format(resdict))
 
     return json.dumps(resdict)
 
