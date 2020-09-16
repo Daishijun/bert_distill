@@ -9,11 +9,6 @@ Introduction:
 
 import sys
 sys.path.append('../')
-import argparse
-
-parser = argparse.ArgumentParser()
-parser.add_argument('--flask_port', help='port of service', type=int, required=True)
-args = parser.parse_args()
 import json
 import random
 import time
@@ -24,8 +19,11 @@ from onnx_CB_model import ClickBaitOnnx
 
 from flask import Flask
 from flask import request
+import argparse
 
-
+parser = argparse.ArgumentParser()
+parser.add_argument('--flask_port', help='port of service', type=int, required=True, default=9025)
+args = parser.parse_args()
 
 LOGGING_CB = LogInit('ClickBait_ONNX_Server_Logs')
 model = ClickBaitOnnx()
@@ -60,6 +58,5 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 app.wsgi_app = ProxyFix(app.wsgi_app)
 
 if __name__ == '__main__':
-
     app.run(host='0.0.0.0', port=args.flask_port)
 

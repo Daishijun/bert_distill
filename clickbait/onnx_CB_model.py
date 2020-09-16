@@ -24,20 +24,22 @@ import onnxruntime
 from transformers import BertTokenizer
 
 import argparse
-parser = argparse.ArgumentParser()
-parser.add_argument('--modeldir', type=str, default='../data/cache/cpucache/onnx_models/', help='load trained model dir path')
-parser.add_argument('--modelfilename', type=str, default='resaved_params_E20.onnx', help='load trained model name')
-args = parser.parse_args()
+# parser = argparse.ArgumentParser()
+# parser.add_argument('--modeldir', type=str, default='../data/cache/cpucache/onnx_models/', help='load trained model dir path')
+# parser.add_argument('--modelfilename', type=str, default='resaved_params_E20.onnx', help='load trained model name')
+# args = parser.parse_args()
 
+modeldir = '../data/cache/cpucache/onnx_models/'
+modelfilename = 'resaved_params_E20.onnx'
 # os.environ["OMP_NUM_THREADS"] = str(psutil.cpu_count(logical=True))
 os.environ["OMP_NUM_THREADS"] = str(20)
 os.environ["OMP_WAIT_POLICY"] = 'ACTIVE'
 
 class ClickBaitOnnx():
     def __init__(self):
-        export_model_path = os.path.join(args.modeldir, args.modelfilename)
+        export_model_path = os.path.join(modeldir, modelfilename)
         sess_options = onnxruntime.SessionOptions()
-        sess_options.optimized_model_filepath = os.path.join(args.modeldir, "optimized_model_cpu.onnx")
+        sess_options.optimized_model_filepath = os.path.join(modeldir, "optimized_model_cpu.onnx")
         self.session = onnxruntime.InferenceSession(export_model_path, sess_options, providers=['CPUExecutionProvider'])
 
         self.max_seq = 128
