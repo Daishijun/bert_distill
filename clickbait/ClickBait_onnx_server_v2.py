@@ -16,19 +16,12 @@ import numpy as np
 import os
 from util_log import LogInit
 from onnx_CB_model import ClickBaitOnnx
-import gflags
+
 from flask import Flask
 from flask import request
 import argparse
 
-gflags.DEFINE_integer('flask_port', 9025, 'Flask Port')
-try:
-    args = gflags.FLAGS(sys.argv)
-except gflags.FlagsError as err:
-    print(err)
-    sys.exit(err)
 
-flask_port = gflags.FLAGS.flask_port
 
 LOGGING_CB = LogInit('ClickBait_ONNX_Server_Logs')
 model = ClickBaitOnnx()
@@ -64,5 +57,14 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 app.wsgi_app = ProxyFix(app.wsgi_app)
 
 if __name__ == '__main__':
+    import gflags
+    gflags.DEFINE_integer('flask_port', 9025, 'Flask Port')
+    try:
+        args = gflags.FLAGS(sys.argv)
+    except gflags.FlagsError as err:
+        print(err)
+        sys.exit(err)
+
+    flask_port = gflags.FLAGS.flask_port
     app.run(host='0.0.0.0', port=flask_port)
 
