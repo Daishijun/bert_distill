@@ -19,7 +19,7 @@ from onnx_CB_model import ClickBaitOnnx
 
 from flask import Flask
 from flask import request
-import argparse
+
 
 LOGGING_CB = LogInit('ClickBait_ONNX_Server_Logs')
 model = ClickBaitOnnx()
@@ -54,6 +54,7 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 app.wsgi_app = ProxyFix(app.wsgi_app)
 
 if __name__ == '__main__':
+    import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument('--flask_port', type=int, default=9025, help='')
     args = parser.parse_args()
