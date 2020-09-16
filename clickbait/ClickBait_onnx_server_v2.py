@@ -12,7 +12,7 @@ sys.path.append('../')
 import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--flask_port', type=int, required=True, help='port of service')
+parser.add_argument('--flask_port', help='port of service', type=int, required=True)
 args = parser.parse_args()
 import json
 import random
