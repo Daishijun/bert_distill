@@ -56,7 +56,7 @@ app.wsgi_app = ProxyFix(app.wsgi_app)
 if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument('--flask_port', type=int,required=True , help='')
+    parser.add_argument('--flask_port', type=int,required=True , help='port of service')
     args = parser.parse_args()
     app.run(host='0.0.0.0', port=args.flask_port)
 
