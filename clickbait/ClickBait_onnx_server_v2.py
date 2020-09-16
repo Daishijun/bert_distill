@@ -22,7 +22,7 @@ from flask import request
 import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--flask_port', help='port of service', type=int, required=True, default=9025)
+parser.add_argument('--flask_port', help='port of service', type=int,default=9025)
 args = parser.parse_args()
 
 LOGGING_CB = LogInit('ClickBait_ONNX_Server_Logs')
