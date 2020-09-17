@@ -25,7 +25,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--flask_port', help='port of service', type=int,default=9025)
 args = parser.parse_args()
 
-LOGGING_CB = LogInit('ClickBait_ONNX_Server_Logs')
+LOGGING_CB = LogInit('ClickBait_ONNX_Server_v2_doing_Logs')
 model = ClickBaitOnnx()
 
 app = Flask(__name__)
