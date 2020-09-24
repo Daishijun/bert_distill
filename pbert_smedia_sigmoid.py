@@ -128,7 +128,7 @@ class BertClassification(BertPreTrainedModel):
             print('+++label_ids.squeeze(-1) shape : {}++'.format(label_ids.squeeze(dim=-1).shape))
             print('---logits.squeeze(-1) shape : {}++'.format(logits.squeeze(-1).shape))
 
-            return loss_fct(logits.squeeze(dim=-1), label_ids.view(-1))
+            return loss_fct(logits, label_ids.view(-1,1))
         return logits
 
 def main(bert_model='bert-base-cased', cache_dir=None,
