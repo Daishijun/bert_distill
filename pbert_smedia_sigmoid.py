@@ -120,6 +120,10 @@ class BertClassification(BertPreTrainedModel):
         _, pooled_output = self.bert(input_ids, None, input_mask)
         pooled_output = self.dropout(pooled_output)
         logits = self.classifier(pooled_output)
+
+        print('++debug logits: {}\nlabel_ids:{}'.format(logits, label_ids))
+        print('++debug type : logits: {}\nlabel_ids:{}'.format(type(logits), type(label_ids)))
+
         if label_ids is not None:
             loss_fct = BCEWithLogitsLoss()
             print('+++logits shape : {}'.format(logits.shape))
