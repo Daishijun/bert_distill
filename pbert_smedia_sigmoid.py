@@ -121,7 +121,7 @@ class BertClassification(BertPreTrainedModel):
         pooled_output = self.dropout(pooled_output)
         logits = self.classifier(pooled_output)
 
-        print('++debug logits: {}\nlabel_ids:{}'.format(logits, label_ids))
+        print('++debug logits: {}\nlabel_ids:{}'.format(logits.squeeze(dim=-1), label_ids))
         print('++debug type : logits: {}\nlabel_ids:{}'.format(type(logits), type(label_ids)))
 
         if label_ids is not None:
