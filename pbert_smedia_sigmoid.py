@@ -19,6 +19,8 @@ from sklearn.metrics import f1_score, confusion_matrix
 import argparse
 from pytorchtools import EarlyStopping
 
+from torch.utils.tensorboard import SummaryWriter
+
 
 import json
 parser = argparse.ArgumentParser()
@@ -144,6 +146,8 @@ def main(bert_model='bert-base-cased', cache_dir=None,
     train_examples = processor_train.get_example()
     label_list = processor_train.get_labels()  #label列表[0,1]
 
+    writer = SummaryWriter()
+
     print('train data load ok')
     tokenizer = BertTokenizer.from_pretrained(bert_model, do_lower_case=True)
     model = BertClassification.from_pretrained(bert_model,
@@ -175,7 +179,7 @@ def main(bert_model='bert-base-cased', cache_dir=None,
     eval_features = convert_examples_to_features(eval_examples, label_list, max_seq, tokenizer)
     eval_input_ids = torch.tensor([f.input_ids for f in eval_features])
     eval_input_mask = torch.tensor([f.input_mask for f in eval_features])
-    eval_label_ids = torch.tensor([f.label_id for f in eval_features])
+    eval_label_ids = torch.FloatTensor([f.label_id for f in eval_features])
     eval_data = TensorDataset(eval_input_ids, eval_input_mask, eval_label_ids)
     eval_sampler = SequentialSampler(eval_data)
     eval_dataloader = DataLoader(eval_data, sampler=eval_sampler, batch_size=batch_size)
@@ -219,6 +223,9 @@ def main(bert_model='bert-base-cased', cache_dir=None,
         avg_valid_losses.append(valid_loss)
 
         epoch_len = len(str(num_epochs))
+        writer.add_scalar('train_loss', train_loss, epoch)
+        writer.add_scalar('valid_loss', valid_loss, epoch)
+
         print_msg = (f'[{epoch:>{epoch_len}}/{num_epochs:>{epoch_len}}] ' +
                      f'train_loss: {train_loss:.5f} ' +
                      f'valid_loss: {valid_loss:.5f}')
