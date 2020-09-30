@@ -19,6 +19,7 @@ from sklearn.metrics import f1_score, confusion_matrix
 import argparse
 from pytorchtools import EarlyStopping
 
+
 import json
 parser = argparse.ArgumentParser()
 parser.add_argument('--device',type=str,default='cuda:1',help='')
@@ -169,7 +170,7 @@ def main(bert_model='bert-base-cased', cache_dir=None,
     train_features = convert_examples_to_features(train_examples, label_list, max_seq, tokenizer)
     all_input_ids = torch.tensor([f.input_ids for f in train_features])
     all_input_mask = torch.tensor([f.input_mask for f in train_features])
-    all_label_ids = torch.tensor([f.label_id for f in train_features])
+    all_label_ids = torch.FloatTensor([f.label_id for f in train_features])
     train_data = TensorDataset(all_input_ids, all_input_mask, all_label_ids)
     train_sampler = RandomSampler(train_data)  #从数据集中随机采样
     train_dataloader = DataLoader(train_data, sampler=train_sampler, batch_size=batch_size)
