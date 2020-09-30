@@ -9,7 +9,7 @@ Introduction:
 
 import os, csv, random, torch, torch.nn as nn, numpy as np
 import torch.nn.functional as F
-from torch.utils.data import TensorDataset, RandomSampler, SequentialSampler, DataLoader
+from torch.utils.data import TensorDataset, RandomSampler, SequentialSampler, DataLoader, WeightedRandomSampler
 from transformers import BertModel, BertPreTrainedModel
 from transformers import BertTokenizer
 from transformers import AdamW
@@ -170,7 +170,8 @@ def main(bert_model='bert-base-cased', cache_dir=None,
     all_input_mask = torch.tensor([f.input_mask for f in train_features])
     all_label_ids = torch.FloatTensor([f.label_id for f in train_features])
     train_data = TensorDataset(all_input_ids, all_input_mask, all_label_ids)
-    train_sampler = RandomSampler(train_data)  #从数据集中随机采样
+    # train_sampler = RandomSampler(train_data)  #从数据集中随机采样
+    train_sampler = WeightedRandomSampler(torch.FloatTensor([1, 4]).to(device), len(train_data),replacement=True)  #从数据集中随机采样
     train_dataloader = DataLoader(train_data, sampler=train_sampler, batch_size=batch_size)
     # model.train()
 
@@ -236,7 +237,7 @@ def main(bert_model='bert-base-cased', cache_dir=None,
 
         if valid_loss<=valid_losss_min:
             print('Validation loss decreased ({:.6f}-->{:.6f}) Saving model ...'.format(valid_losss_min, valid_loss))
-            torch.save(model.state_dict(), 'data/cache/bert_finetune_sig_weightpos_checkp.pt')
+            torch.save(model.state_dict(), 'data/cache/bert_finetune_sig_weightpos_weightsamp_checkp.pt')
             valid_losss_min = valid_loss
 
         early_stopping(valid_loss, model)
@@ -245,8 +246,8 @@ def main(bert_model='bert-base-cased', cache_dir=None,
             print('Early Stopping: {}'.format(epoch))
             break
 
-    model.load_state_dict(torch.load('data/cache/bert_finetune_sig_weightpos_checkp.pt'))
-    torch.save(model, 'data/cache/model_smedia_sig_weightpos_smedia')
+    model.load_state_dict(torch.load('data/cache/bert_finetune_sig_weightpos_weightsamp_checkp.pt'))
+    torch.save(model, 'data/cache/model_smedia_sig_weightpos_weightsamp_smedia')
     print('bert fine-tune ok')
 
 if __name__ == '__main__':
