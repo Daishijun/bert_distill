@@ -128,7 +128,7 @@ class BertClassification(BertPreTrainedModel):
         # print('++debug type : logits: {}\nlabel_ids:{}'.format(type(logits), type(label_ids)))
 
         if label_ids is not None:
-            loss_fct = BCEWithLogitsLoss()
+            loss_fct = BCEWithLogitsLoss(pos_weight=torch.FloatTensor([8]))
             return loss_fct(logits, label_ids.view(-1,1))
         return logits
 
@@ -190,7 +190,7 @@ def main(bert_model='bert-base-cased', cache_dir=None,
     avg_train_losses = []
     avg_valid_losses = []
 
-    early_stopping = EarlyStopping(patience=10, verbose=True)
+    early_stopping = EarlyStopping(patience=3, verbose=True)
 
     valid_losss_min = np.Inf
 
@@ -236,7 +236,7 @@ def main(bert_model='bert-base-cased', cache_dir=None,
 
         if valid_loss<=valid_losss_min:
             print('Validation loss decreased ({:.6f}-->{:.6f}) Saving model ...'.format(valid_losss_min, valid_loss))
-            torch.save(model.state_dict(), 'data/cache/bert_finetune_sig_checkp.pt')
+            torch.save(model.state_dict(), 'data/cache/bert_finetune_sig_weightpos_checkp.pt')
             valid_losss_min = valid_loss
 
         early_stopping(valid_loss, model)
@@ -245,8 +245,8 @@ def main(bert_model='bert-base-cased', cache_dir=None,
             print('Early Stopping: {}'.format(epoch))
             break
 
-    model.load_state_dict(torch.load('data/cache/bert_finetune_sig_checkp.pt'))
-    torch.save(model, 'data/cache/model_smedia_sig_smedia')
+    model.load_state_dict(torch.load('data/cache/bert_finetune_sig_weightpos_checkp.pt'))
+    torch.save(model, 'data/cache/model_smedia_sig_weightpos_smedia')
     print('bert fine-tune ok')
 
 if __name__ == '__main__':
