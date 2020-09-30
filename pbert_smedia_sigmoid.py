@@ -122,17 +122,11 @@ class BertClassification(BertPreTrainedModel):
         pooled_output = self.dropout(pooled_output)
         logits = self.classifier(pooled_output)
 
-        print('++debug logits: {}\nlabel_ids:{}'.format(logits.squeeze(dim=-1), label_ids))
-        print('++debug type : logits: {}\nlabel_ids:{}'.format(type(logits), type(label_ids)))
+        # print('++debug logits: {}\nlabel_ids:{}'.format(logits.squeeze(dim=-1), label_ids))
+        # print('++debug type : logits: {}\nlabel_ids:{}'.format(type(logits), type(label_ids)))
 
         if label_ids is not None:
             loss_fct = BCEWithLogitsLoss()
-            print('+++logits shape : {}'.format(logits.shape))
-            print('+++label_ids shape : {}++'.format(label_ids.shape))
-            print('+++label_ids.view(-1) shape : {}++'.format(label_ids.view(-1).shape))
-            print('+++label_ids.squeeze(-1) shape : {}++'.format(label_ids.squeeze(dim=-1).shape))
-            print('---logits.squeeze(-1) shape : {}++'.format(logits.squeeze(-1).shape))
-
             return loss_fct(logits, label_ids.view(-1,1))
         return logits
 
