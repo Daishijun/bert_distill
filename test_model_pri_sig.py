@@ -42,7 +42,8 @@ class Teacher(object):
         # self.model = torch.load('./data/cache/model_smedia_smedia_earlyS_E50P5')  #加载预训练好的bert  early stop patience==5, 最多50个epoch。
         # self.model = torch.load('./data/cache/model_smedia_smedia_E50')
         # self.model = torch.load('./data/cache/model_smedia_sig_smedia')  #softmax换成sigmoid
-        self.model = torch.load('./data/cache/model_smedia_sig_weightpos_smedia')  #softmax换成sigmoid+weightedposloss
+        # self.model = torch.load('./data/cache/model_smedia_sig_weightpos_smedia')  #softmax换成sigmoid+weightedposloss
+        self.model = torch.load('./data/cache/model_smedia_sig_weightsamp_smedia')  #softmax换成sigmoid+weightedposloss
         self.model.eval()  #只做预测不再调参
 
     def predict(self, text):
@@ -119,5 +120,6 @@ if __name__ == '__main__':
     # np.savez('data/cache/prthres_bert_finetune_test_epoch20_withpredtruth.npz', precision = precision, recall = recall, thres = thresholds, preds=pred_scores, truths=truths)
     # np.savez('data/cache/prthres_bert_finetune_train_epoch20_withpredtruth.npz', precision = precision, recall = recall, thres = thresholds, preds=pred_scores, truths=truths)
     # np.savez('data/cache/prthres_bert_finetune_test_smedia_sig.npz', precision = precision, recall = recall, thres = thresholds, preds=pred_scores, truths=truths)
-    np.savez('data/cache/prthres_bert_finetune_test_smedia_sig_weightpos.npz', precision = precision, recall = recall, thres = thresholds, preds=pred_scores, truths=truths)
+    # np.savez('data/cache/prthres_bert_finetune_test_smedia_sig_weightpos.npz', precision = precision, recall = recall, thres = thresholds, preds=pred_scores, truths=truths)
+    np.savez('data/cache/prthres_bert_finetune_test_smedia_sig_weightsamp.npz', precision = precision, recall = recall, thres = thresholds, preds=pred_scores, truths=truths)
     print('p-r dump to npz ok')
