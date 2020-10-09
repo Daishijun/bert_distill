@@ -46,7 +46,7 @@ class BertClassification(BertPreTrainedModel):
         if label_ids is not None:
             loss_fct = BCEWithLogitsLoss()
             return loss_fct(logits, label_ids.view(-1, 1))
-        return logits
+        return F.sigmoid(logits)
 
 class Teacher(object):
     def __init__(self, bert_model='bert-base-cased', trainedmodel=None, max_seq=128):
@@ -65,7 +65,8 @@ class Teacher(object):
         input_mask = torch.tensor([input_mask + padding], dtype=torch.long).to(device)
         logits = self.model(input_ids, input_mask, None)
         # return F.softmax(logits, dim=1).detach().cpu().numpy()
-        return F.sigmoid(logits).detach().cpu().numpy()
+        # return F.sigmoid(logits).detach().cpu().numpy()
+        return logits
 
 class DataProcessorv2(object):
     def __init__(self, file, actor):
