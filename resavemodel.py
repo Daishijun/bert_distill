@@ -74,6 +74,6 @@ if __name__ == '__main__':
     newmodel = BertClassification.from_pretrained('bert-base-cased',
                                                cache_dir=None, num_labels=1)
     print('load resave params ...')
-    newmodel.load_state_dict(torch.load('data/cache/resaved_params_sig_weightedpos.pth'))
+    newmodel.load_state_dict(torch.load('data/cache/cpucache/resaved_params_sig_weightedpos.pth'))
     print('load ok')
 
