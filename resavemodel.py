@@ -68,7 +68,7 @@ class BertClassification(BertPreTrainedModel):
 if __name__ == '__main__':
     teacher = Teacher()
     print('save model params start')
-    torch.save(obj=teacher.model.state_dict(), f='data/cache/resaved_params_sig_weightedpos.pth')
+    torch.save(obj=teacher.model.state_dict(), f='data/cache/cpucache/resaved_params_sig_weightedpos.pth')
     print('resave ok')
     #
     newmodel = BertClassification.from_pretrained('bert-base-cased',
