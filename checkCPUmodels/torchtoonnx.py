@@ -142,6 +142,8 @@ if __name__ == '__main__':
     # print('label: {}'.format(truths[0]))
     # print('infertime: {}'.format(infertime))
     truths_cm = np.array(list(truths))
+
+    print('torch model pred: {}'.format(pred))
     print('confusion matrix')
     print(confusion_matrix(y_true=truths, y_pred=pred_class))
 
