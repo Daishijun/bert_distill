@@ -46,7 +46,6 @@ def predict_CB():
 
     t3 = time.time()
     pred = np.array(res_mgs).flatten()
-    print('pred: {}'.format(pred))
     resdict = {'score': float(pred[0])}
     t4 = time.time()
 
