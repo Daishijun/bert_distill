@@ -97,7 +97,7 @@ if __name__ == '__main__':
 
     # datapath = 'data/smediatest/CBaitdata-08-17.json'
     # datapath = 'data/smediatest/CBaitdata-08-18.json'
-    datapath = 'data/smediatest/CBaitdata_merge_smedia_test_bert.json'
+    datapath = '../data/smediatest/CBaitdata_merge_smedia_test_bert.json'
     # datapath = 'data/smediatest/CBaitdata_merge_smedia_train.json'
     # datapath = 'data/smediatest/CBaitdata_multi_2020-08-17_2020-08-18_onlyexagg.json'
     # datapath = 'data/smediatest/CBaitdata_multi_2020-08-17_2020-08-18_onlyincon.json'
