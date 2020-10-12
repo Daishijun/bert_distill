@@ -94,7 +94,7 @@ class Teacher2(object):
         logits = self.model(input_ids, input_mask, None)
         # return F.softmax(logits, dim=1).detach().cpu().numpy()
         # return F.sigmoid(logits).detach().cpu().numpy()
-        return logits
+        return logits.detach().cpu().numpy()
 
 if __name__ == '__main__':
 
