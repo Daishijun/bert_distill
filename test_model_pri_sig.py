@@ -74,7 +74,7 @@ class BertClassification(BertPreTrainedModel):
         if label_ids is not None:
             loss_fct = BCEWithLogitsLoss()
             return loss_fct(logits, label_ids.view(-1, 1))
-        return F.sigmoid(logits)
+        return logits
 #
 # class Teacher2(object):
 #     def __init__(self, bert_model='bert-base-cased', trainedmodel=None, max_seq=128):
