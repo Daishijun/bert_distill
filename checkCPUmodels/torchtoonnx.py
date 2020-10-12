@@ -119,7 +119,8 @@ if __name__ == '__main__':
     teacher = Teacher(trainedmodel=
                       newmodel)
 
-    datapath = '../data/smediatest/CBaitdata_multi_2020-08-17_2020-08-18_onlyincon.json'
+    # datapath = '../data/smediatest/CBaitdata_multi_2020-08-17_2020-08-18_onlyincon.json'
+    datapath = '../data/smediatest/CBaitdata_merge_smedia_test_bert.json'
     processor_test = DataProcessorv2(file=datapath, actor='test')
     test_label_text_list = processor_test.allpos + processor_test.allneg
     random.shuffle(test_label_text_list)
@@ -161,7 +162,8 @@ if __name__ == '__main__':
     output_dir = '../data/cache/cpucache/onnx_models'
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
-    export_model_path = os.path.join(output_dir, 'bert_sigmoid_weightpos.onnx')
+    # export_model_path = os.path.join(output_dir, 'bert_sigmoid_weightpos.onnx')
+    export_model_path = os.path.join(output_dir, 'bert_sigmoid_weightpos_check.onnx')
 
     text = texts[0]
     max_len = 128
@@ -210,7 +212,8 @@ if __name__ == '__main__':
     if 'CUDAExecutionProvider' in onnxruntime.get_available_providers():
         print("warning: onnxruntime-gpu is not built with OpenMP. You might try onnxruntime package to test CPU inference.")
     sess_options = onnxruntime.SessionOptions()
-    sess_options.optimized_model_filepath = os.path.join(output_dir, "optimized_model_cpu.onnx")
+    # sess_options.optimized_model_filepath = os.path.join(output_dir, "optimized_model_cpu.onnx")
+    sess_options.optimized_model_filepath = os.path.join(output_dir, "optimized_model_cpu_check.onnx")
 
     session = onnxruntime.InferenceSession(export_model_path, sess_options, providers=['CPUExecutionProvider'])
     latency = []
@@ -242,40 +245,40 @@ if __name__ == '__main__':
     outpus = np.vstack(outpus)
     preds = np.array(list(map(lambda x:1.0 if x>=0.5 else 0.0, np.vstack(pred))))
 
-    print('preds: {}'.format(preds))
-    print('pred_class: {}'.format(pred_class))
+    print('onnx preds: {}'.format(preds))
+    print('onnx pred_class: {}'.format(pred_class))
     # print('equal or not: {}'.format(pred_class == preds))
 
 
 
     ##
-    url = 'https://cms-a-5001.ams.op-mobile.opera.com/ao/news/entry_id/2e4c95f4200507en_ng'
-    import requests
-    import json
-    news = json.loads(requests.get(url).content)
-
-    title = news['title']
-    print('-----test news time ------')
-    print('title : {}'.format(title))
-    print('++time of teacher++')
-
-    t1 = time.time()
-    pred = teacher.predict(title)
-    t2 = time.time()
-    print('news torch predict time :{}'.format(t2-t1))
-
-    print('time of onnx')
-    tokens = teacher.tokenizer.tokenize(title)[:max_len]
-    input_ids = teacher.tokenizer.convert_tokens_to_ids(tokens)
-    input_mask = [1] * len(input_ids)
-    padding = [0] * (max_len - len(input_ids))
-    input_ids = torch.tensor([input_ids + padding], dtype=torch.long).to(device)
-    input_mask = torch.tensor([input_mask + padding], dtype=torch.long).to(device)
-    ort_inputs = {
-        'input_ids': input_ids.reshape(1, max_len).numpy(),
-        'input_mask': input_mask.reshape(1, max_len).numpy()
-    }
-    start = time.time()
-    ort_outputs = session.run(None, ort_inputs)
-    end = time.time()
-    print('news onnx predict time : {}'.format(end-start))
+    # url = 'https://cms-a-5001.ams.op-mobile.opera.com/ao/news/entry_id/2e4c95f4200507en_ng'
+    # import requests
+    # import json
+    # news = json.loads(requests.get(url).content)
+    #
+    # title = news['title']
+    # print('-----test news time ------')
+    # print('title : {}'.format(title))
+    # print('++time of teacher++')
+    #
+    # t1 = time.time()
+    # pred = teacher.predict(title)
+    # t2 = time.time()
+    # print('news torch predict time :{}'.format(t2-t1))
+    #
+    # print('time of onnx')
+    # tokens = teacher.tokenizer.tokenize(title)[:max_len]
+    # input_ids = teacher.tokenizer.convert_tokens_to_ids(tokens)
+    # input_mask = [1] * len(input_ids)
+    # padding = [0] * (max_len - len(input_ids))
+    # input_ids = torch.tensor([input_ids + padding], dtype=torch.long).to(device)
+    # input_mask = torch.tensor([input_mask + padding], dtype=torch.long).to(device)
+    # ort_inputs = {
+    #     'input_ids': input_ids.reshape(1, max_len).numpy(),
+    #     'input_mask': input_mask.reshape(1, max_len).numpy()
+    # }
+    # start = time.time()
+    # ort_outputs = session.run(None, ort_inputs)
+    # end = time.time()
+    # print('news onnx predict time : {}'.format(end-start))
