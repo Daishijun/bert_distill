@@ -66,7 +66,7 @@ class Teacher(object):
         logits = self.model(input_ids, input_mask, None)
         # return F.softmax(logits, dim=1).detach().cpu().numpy()
         # return F.sigmoid(logits).detach().cpu().numpy()
-        return logits
+        return logits.detach().cpu().numpy()
 
 class DataProcessorv2(object):
     def __init__(self, file, actor):
