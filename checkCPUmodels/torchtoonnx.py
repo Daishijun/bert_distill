@@ -244,7 +244,7 @@ if __name__ == '__main__':
 
     # print('onnx output of berclassification: {}'.format(outpus))
     print('type of output: {}'.format(type(outpus)))
-
+#
     outpus = np.vstack(outpus)
     preds = np.array(list(map(lambda x:1.0 if x>=0.5 else 0.0, np.vstack(pred))))
 
