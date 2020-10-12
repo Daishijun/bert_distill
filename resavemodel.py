@@ -33,7 +33,7 @@ class Teacher(nn.Module):
         # self.model = torch.load('./data/cache/model_smedia_smedia_epoch20')  #加载预训练好的bert 20个epoch的
         # self.model = torch.load('./data/cache/model_smedia_smedia_earlyS')  #加载预训练好的bert  early stop patience==3, 结果就保存了第一个。
         # self.model = torch.load('./data/cache/model_smedia_smedia_earlyS_E50P5')  #加载预训练好的bert  early stop patience==5, 最多50个epoch。
-        self.model = torch.load('./data/cache/model_smedia_sig_weightsamp_smedia')
+        self.model = torch.load('./data/cache/model_smedia_sig_weightpos_smedia')
         self.model.eval()  #只做预测不再调参
 
     def predict(self, text):
