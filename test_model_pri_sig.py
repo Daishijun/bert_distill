@@ -10,7 +10,7 @@ Introduction:
 
 import torch
 from transformers import BertTokenizer
-from ptbert_smedia import *
+from pbert_smedia_sigmoid import *
 from small import *
 from utils_smedia import *
 import time
@@ -58,23 +58,23 @@ class Teacher(object):
         # return F.softmax(logits, dim=1).detach().cpu().numpy()
         return F.sigmoid(logits).detach().cpu().numpy()
 
-class BertClassification(BertPreTrainedModel):
-    def __init__(self, config, num_labels=1):
-        super(BertClassification, self).__init__(config)
-        self.num_labels = num_labels
-        self.bert = BertModel(config)
-        self.dropout = nn.Dropout(config.hidden_dropout_prob)
-        self.classifier = nn.Linear(config.hidden_size, num_labels)
-        self.init_weights()
-
-    def forward(self, input_ids, input_mask, label_ids=None):
-        _, pooled_output = self.bert(input_ids, None, input_mask)
-        pooled_output = self.dropout(pooled_output)
-        logits = self.classifier(pooled_output)
-        if label_ids is not None:
-            loss_fct = BCEWithLogitsLoss()
-            return loss_fct(logits, label_ids.view(-1, 1))
-        return logits
+# class BertClassification(BertPreTrainedModel):
+#     def __init__(self, config, num_labels=1):
+#         super(BertClassification, self).__init__(config)
+#         self.num_labels = num_labels
+#         self.bert = BertModel(config)
+#         self.dropout = nn.Dropout(config.hidden_dropout_prob)
+#         self.classifier = nn.Linear(config.hidden_size, num_labels)
+#         self.init_weights()
+#
+#     def forward(self, input_ids, input_mask, label_ids=None):
+#         _, pooled_output = self.bert(input_ids, None, input_mask)
+#         pooled_output = self.dropout(pooled_output)
+#         logits = self.classifier(pooled_output)
+#         if label_ids is not None:
+#             loss_fct = BCEWithLogitsLoss()
+#             return loss_fct(logits, label_ids.view(-1, 1))
+#         return logits
 #
 # class Teacher2(object):
 #     def __init__(self, bert_model='bert-base-cased', trainedmodel=None, max_seq=128):
