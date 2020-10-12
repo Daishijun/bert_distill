@@ -1,0 +1,166 @@
+# -*- coding: utf-8 -*- 
+"""
+Project: bert_distill
+Creator: shijundai
+Create time: 2020-10-12 11:39
+IDE: PyCharm
+Introduction:
+"""
+
+#load onnx model, check output value of model compared with torch model
+
+import sys
+sys.path.append('../')
+
+import time
+import numpy as np
+import os
+
+
+import torch
+
+
+
+device = torch.device('cpu')
+import psutil
+import onnxruntime
+
+from transformers import BertTokenizer
+
+
+import torch
+from transformers import BertTokenizer
+from ptbert_smedia import *
+from small import *
+from utils_smedia import *
+import time
+
+import argparse
+import random
+
+from sklearn.metrics import confusion_matrix, precision_recall_curve
+import json
+parser = argparse.ArgumentParser()
+parser.add_argument('--device',type=str,default='cuda:1',help='')
+
+
+args = parser.parse_args()
+
+# device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+device = torch.device(args.device if torch.cuda.is_available() else 'cpu')
+
+FTensor = torch.cuda.FloatTensor if USE_CUDA else torch.FloatTensor
+
+import argparse
+# parser = argparse.ArgumentParser()
+# parser.add_argument('--modeldir', type=str, default='../data/cache/cpucache/onnx_models/', help='load trained model dir path')
+# parser.add_argument('--modelfilename', type=str, default='resaved_params_E20.onnx', help='load trained model name')
+# args = parser.parse_args()
+
+modeldir = '../data/cache/cpucache/onnx_models/'
+modelfilename = 'bert_sigmoid_weightpos.onnx'
+# os.environ["OMP_NUM_THREADS"] = str(psutil.cpu_count(logical=True))
+os.environ["OMP_NUM_THREADS"] = str(20)
+os.environ["OMP_WAIT_POLICY"] = 'ACTIVE'
+
+class ClickBaitOnnx():
+    def __init__(self):
+        export_model_path = os.path.join(modeldir, modelfilename)
+        sess_options = onnxruntime.SessionOptions()
+        sess_options.optimized_model_filepath = os.path.join(modeldir, "optimized_model_cpu.onnx")
+        self.session = onnxruntime.InferenceSession(export_model_path, sess_options, providers=['CPUExecutionProvider'])
+
+        self.max_seq = 128
+        self.tokenizer = BertTokenizer.from_pretrained(
+            'bert-base-cased', do_lower_case=True)
+    def predict(self, text):
+        tokens = self.tokenizer.tokenize(text)[:self.max_seq]
+        input_ids = self.tokenizer.convert_tokens_to_ids(tokens)
+        input_mask = [1] * len(input_ids)
+        padding = [0] * (self.max_seq - len(input_ids))
+        input_ids = torch.tensor([input_ids + padding], dtype=torch.long).to(device)
+        input_mask = torch.tensor([input_mask + padding], dtype=torch.long).to(device)
+        ort_inputs = {
+            'input_ids': input_ids.reshape(1, self.max_seq).numpy(),
+            'input_mask': input_mask.reshape(1, self.max_seq).numpy()
+        }
+        t1 = time.time()
+        ort_outputs = self.session.run(None, ort_inputs)
+        t2 = time.time()
+        return ort_outputs, t2-t1
+
+
+if __name__ == '__main__':
+    teacher = ClickBaitOnnx()
+    import pickle
+    from tqdm import tqdm
+
+    # datapath = 'data/smediatest/CBaitdata-08-17.json'
+    # datapath = 'data/smediatest/CBaitdata-08-18.json'
+    datapath = 'data/smediatest/CBaitdata_merge_smedia_test_bert.json'
+    # datapath = 'data/smediatest/CBaitdata_merge_smedia_train.json'
+    # datapath = 'data/smediatest/CBaitdata_multi_2020-08-17_2020-08-18_onlyexagg.json'
+    # datapath = 'data/smediatest/CBaitdata_multi_2020-08-17_2020-08-18_onlyincon.json'
+
+
+    print('---test bert-finetune model---')
+    processor_test = DataProcessorv2(file=datapath, actor='test')
+    test_label_text_list = processor_test.allpos + processor_test.allneg
+    random.shuffle(test_label_text_list)
+
+    truths, texts = zip(*test_label_text_list)
+    print('length of truths: {}\t of texts: {}'.format(len(truths), len(texts)))
+
+    starttime = time.time()
+    with torch.no_grad():
+        pred = np.vstack([teacher.predict(text)[0] for text in tqdm(texts)])
+
+    endtime = time.time()
+    infertime = endtime - starttime
+    # print('type of teacher predict: {}\t pred:{}'.format(type(pred_0), pred_0))
+    # print('truth of index 0 : {}'.format(truths[0]))
+
+    print('type of pred :{}'.format(type(pred)))
+    print('pred: \n{}'.format(pred))
+
+    # pred_class =  np.argmax(np.vstack(pred), axis=1)
+    pred_class =  np.array(list(map(lambda x:1.0 if x>=0.5 else 0.0, np.vstack(pred))))
+    print('pred_v2:\n {}'.format(pred_class))
+
+    truths = np.array(list(truths))
+    print('truth: \n {}'.format(truths))
+
+    print('confusion matrix')
+    print(confusion_matrix(y_true=truths, y_pred=pred_class))
+
+    # pred_0_scores, pred_scores = zip(*pred)
+    pred_scores = pred.flatten()
+    pred_scores = np.array(list(pred_scores))
+    precision, recall, thresholds = precision_recall_curve(y_true=truths, probas_pred=pred_scores)
+
+    print('P-R curve')
+    print('precision: {}'.format(precision))
+    print('recall : {}'.format(recall))
+    print('thres: {}'.format(thresholds))
+
+    print('+++Avg Inference Time : {}+++'.format(infertime/len(truths)))
+    # np.savez('data/cache/prthres_bert_finetune_0817_epoch20.npz', precision = precision, recall = recall, thres = thresholds)
+    # np.savez('data/cache/prthres_bert_finetune_0818_epoch20.npz', precision = precision, recall = recall, thres = thresholds)
+    # np.savez('data/cache/prthres_bert_finetune_test_epoch20.npz', precision = precision, recall = recall, thres = thresholds)
+    # np.savez('data/cache/prthres_bert_finetune_test_bert_finetune_E50P5.npz', precision = precision, recall = recall, thres = thresholds)
+    # np.savez('data/cache/prthres_bert_finetune_test_onlyexagg_bert_finetune_epoch20.npz', precision = precision, recall = recall, thres = thresholds)
+    # np.savez('data/cache/prthres_bert_finetune_test_onlyincon_bert_finetune_epoch20.npz', precision = precision, recall = recall, thres = thresholds)
+    # np.savez('data/cache/prthres_bert_finetune_test_epoch20_withpredtruth.npz', precision = precision, recall = recall, thres = thresholds, preds=pred_scores, truths=truths)
+    # np.savez('data/cache/prthres_bert_finetune_train_epoch20_withpredtruth.npz', precision = precision, recall = recall, thres = thresholds, preds=pred_scores, truths=truths)
+    # np.savez('data/cache/prthres_bert_finetune_test_smedia_sig.npz', precision = precision, recall = recall, thres = thresholds, preds=pred_scores, truths=truths)
+    # np.savez('data/cache/prthres_bert_finetune_test_smedia_sig_weightpos.npz', precision = precision, recall = recall, thres = thresholds, preds=pred_scores, truths=truths)
+    # np.savez('data/cache/prthres_bert_finetune_test_smedia_sig_weightsamp.npz', precision = precision, recall = recall, thres = thresholds, preds=pred_scores, truths=truths)
+
+    # np.savez('data/cache/prthres_bert_finetune_test_smedia_sig_weightpos_check2.npz', precision = precision, recall = recall, thres = thresholds, preds=pred_scores, truths=truths)
+
+    # print('p-r dump to npz ok')
+    with open('onnx_sigweightedpos_score.txt', 'w') as f:
+        for sc in pred_scores:
+            f.write(str(sc))
+            f.write('\n')
+    print('write ok')
