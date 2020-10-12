@@ -58,7 +58,7 @@ import argparse
 # args = parser.parse_args()
 
 modeldir = '../data/cache/cpucache/onnx_models/'
-modelfilename = 'bert_sigmoid_weightpos_check.onnx'
+modelfilename = 'bert_sigmoid_weightpos.onnx'
 # os.environ["OMP_NUM_THREADS"] = str(psutil.cpu_count(logical=True))
 os.environ["OMP_NUM_THREADS"] = str(20)
 os.environ["OMP_WAIT_POLICY"] = 'ACTIVE'
