@@ -74,7 +74,8 @@ class BertClassification(BertPreTrainedModel):
         if label_ids is not None:
             loss_fct = BCEWithLogitsLoss()
             return loss_fct(logits, label_ids.view(-1, 1))
-        return logits
+        # return logits
+        return F.sigmoid(logits)
 #
 class Teacher2(object):
     def __init__(self, bert_model='bert-base-cased', trainedmodel=None, max_seq=128):
@@ -94,8 +95,8 @@ class Teacher2(object):
         logits = self.model(input_ids, input_mask, None)
         # return F.softmax(logits, dim=1).detach().cpu().numpy()
         # return F.sigmoid(logits).detach().cpu().numpy()
-        # return logits.detach().cpu().numpy()
-        return F.sigmoid(logits).detach().cpu().numpy()
+        return logits.detach().cpu().numpy()
+        # return F.sigmoid(logits).detach().cpu().numpy()
 
 if __name__ == '__main__':
 
@@ -103,8 +104,8 @@ if __name__ == '__main__':
                                                   cache_dir=None, num_labels=1)
     newmodel.to(device)
     print('load resave params ...')
-    newmodel.load_state_dict(torch.load('data/cache/cpucache/resaved_params_sig_weightedpos.pth'))
-    # newmodel.load_state_dict(torch.load('data/cache/bert_finetune_sig_weightpos_checkp.pt'))
+    # newmodel.load_state_dict(torch.load('data/cache/cpucache/resaved_params_sig_weightedpos.pth'))
+    newmodel.load_state_dict(torch.load('data/cache/bert_finetune_sig_weightpos_checkp.pt'))
     print('load ok')
     teacher = Teacher2(trainedmodel=newmodel)
 
