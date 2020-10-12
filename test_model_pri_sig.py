@@ -98,16 +98,16 @@ class Teacher2(object):
 
 if __name__ == '__main__':
 
-    newmodel = BertClassification.from_pretrained('bert-base-cased',
-                                                  cache_dir=None, num_labels=1)
-    newmodel.to(device)
-    print('load resave params ...')
-    newmodel.load_state_dict(torch.load('data/cache/cpucache/resaved_params_sig_weightedpos.pth'))
-    print('load ok')
-    teacher = Teacher2(trainedmodel=newmodel)
+    # newmodel = BertClassification.from_pretrained('bert-base-cased',
+    #                                               cache_dir=None, num_labels=1)
+    # newmodel.to(device)
+    # print('load resave params ...')
+    # newmodel.load_state_dict(torch.load('data/cache/cpucache/resaved_params_sig_weightedpos.pth'))
+    # print('load ok')
+    # teacher = Teacher2(trainedmodel=newmodel)
 
 
-    # teacher = Teacher()
+    teacher = Teacher()
     import pickle
     from tqdm import tqdm
 
