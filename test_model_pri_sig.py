@@ -126,3 +126,8 @@ if __name__ == '__main__':
     np.savez('data/cache/prthres_bert_finetune_test_smedia_sig_weightpos_check2.npz', precision = precision, recall = recall, thres = thresholds, preds=pred_scores, truths=truths)
 
     print('p-r dump to npz ok')
+    with open('sigweightedpos_score.txt', 'w') as f:
+        for sc in pred_scores:
+            f.write(str(sc))
+            f.write('\n')
+    print('write ok')
