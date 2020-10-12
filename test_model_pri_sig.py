@@ -22,6 +22,7 @@ from sklearn.metrics import confusion_matrix, precision_recall_curve
 import json
 parser = argparse.ArgumentParser()
 parser.add_argument('--device',type=str,default='cuda:1',help='')
+from torch.nn import BCEWithLogitsLoss
 
 
 args = parser.parse_args()
@@ -57,8 +58,56 @@ class Teacher(object):
         # return F.softmax(logits, dim=1).detach().cpu().numpy()
         return F.sigmoid(logits).detach().cpu().numpy()
 
+class BertClassification(BertPreTrainedModel):
+    def __init__(self, config, num_labels=1):
+        super(BertClassification, self).__init__(config)
+        self.num_labels = num_labels
+        self.bert = BertModel(config)
+        self.dropout = nn.Dropout(config.hidden_dropout_prob)
+        self.classifier = nn.Linear(config.hidden_size, num_labels)
+        self.init_weights()
+
+    def forward(self, input_ids, input_mask, label_ids=None):
+        _, pooled_output = self.bert(input_ids, None, input_mask)
+        pooled_output = self.dropout(pooled_output)
+        logits = self.classifier(pooled_output)
+        if label_ids is not None:
+            loss_fct = BCEWithLogitsLoss()
+            return loss_fct(logits, label_ids.view(-1, 1))
+        return F.sigmoid(logits)
+
+class Teacher2(object):
+    def __init__(self, bert_model='bert-base-cased', trainedmodel=None, max_seq=128):
+        self.max_seq = max_seq
+        self.tokenizer = BertTokenizer.from_pretrained(
+            bert_model, do_lower_case=True)
+        self.model = trainedmodel
+        self.model.eval()  #只做预测不再调参
+
+    def predict(self, text):
+        tokens = self.tokenizer.tokenize(text)[:self.max_seq]
+        input_ids = self.tokenizer.convert_tokens_to_ids(tokens)  #这里没有再在收尾添加[CLS] [SEP]
+        input_mask = [1] * len(input_ids)
+        padding = [0] * (self.max_seq - len(input_ids))
+        input_ids = torch.tensor([input_ids + padding], dtype=torch.long).to(device)
+        input_mask = torch.tensor([input_mask + padding], dtype=torch.long).to(device)
+        logits = self.model(input_ids, input_mask, None)
+        # return F.softmax(logits, dim=1).detach().cpu().numpy()
+        # return F.sigmoid(logits).detach().cpu().numpy()
+        return logits
+
 if __name__ == '__main__':
-    teacher = Teacher()
+
+    newmodel = BertClassification.from_pretrained('bert-base-cased',
+                                                  cache_dir=None, num_labels=1)
+    newmodel.to(device)
+    print('load resave params ...')
+    newmodel.load_state_dict(torch.load('../data/cache/cpucache/resaved_params_sig_weightedpos.pth'))
+    print('load ok')
+    teacher = Teacher2(trainedmodel=newmodel)
+
+
+    # teacher = Teacher()
     import pickle
     from tqdm import tqdm
 
@@ -123,10 +172,10 @@ if __name__ == '__main__':
     # np.savez('data/cache/prthres_bert_finetune_test_smedia_sig_weightpos.npz', precision = precision, recall = recall, thres = thresholds, preds=pred_scores, truths=truths)
     # np.savez('data/cache/prthres_bert_finetune_test_smedia_sig_weightsamp.npz', precision = precision, recall = recall, thres = thresholds, preds=pred_scores, truths=truths)
 
-    np.savez('data/cache/prthres_bert_finetune_test_smedia_sig_weightpos_check2.npz', precision = precision, recall = recall, thres = thresholds, preds=pred_scores, truths=truths)
+    # np.savez('data/cache/prthres_bert_finetune_test_smedia_sig_weightpos_check2.npz', precision = precision, recall = recall, thres = thresholds, preds=pred_scores, truths=truths)
 
     print('p-r dump to npz ok')
-    with open('sigweightedpos_score.txt', 'w') as f:
+    with open('sigweightedpos_score_loadparams.txt', 'w') as f:
         for sc in pred_scores:
             f.write(str(sc))
             f.write('\n')
