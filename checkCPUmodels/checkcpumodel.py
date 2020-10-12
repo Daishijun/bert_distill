@@ -44,7 +44,7 @@ if __name__ == '__main__':
                                                cache_dir=None, num_labels=1)
     newmodel.to(device)
     print('load resave params ...')
-    newmodel.load_state_dict(torch.load('../data/cache/resaved_params_sig_weightedpos.pth', map_location=torch.device('cpu')))
+    newmodel.load_state_dict(torch.load('../data/cache/cpucache/resaved_params_sig_weightedpos.pth', map_location=torch.device('cpu')))
     print('load ok')
 
     print('save to cpu')
