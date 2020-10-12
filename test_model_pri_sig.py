@@ -103,8 +103,8 @@ if __name__ == '__main__':
                                                   cache_dir=None, num_labels=1)
     newmodel.to(device)
     print('load resave params ...')
-    # newmodel.load_state_dict(torch.load('data/cache/cpucache/resaved_params_sig_weightedpos.pth'))
-    newmodel.load_state_dict(torch.load('data/cache/bert_finetune_sig_weightpos_checkp.pt'))
+    newmodel.load_state_dict(torch.load('data/cache/cpucache/resaved_params_sig_weightedpos.pth'))
+    # newmodel.load_state_dict(torch.load('data/cache/bert_finetune_sig_weightpos_checkp.pt'))
     print('load ok')
     teacher = Teacher2(trainedmodel=newmodel)
 
