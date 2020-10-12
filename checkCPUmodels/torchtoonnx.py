@@ -128,8 +128,10 @@ if __name__ == '__main__':
     truths, texts = zip(*test_label_text_list)
     print('length of truths: {}\t of texts: {}'.format(len(truths), len(texts)))
 
-    truths = truths[:1]
-    texts = texts[:1]
+    # truths = truths[:1]
+    truths = truths[:]
+    # texts = texts[:1]
+    texts = texts[:]
     starttime = time.time()
     with torch.no_grad():
         pred = np.vstack([teacher.predict(text) for text in tqdm(texts)])
@@ -219,7 +221,8 @@ if __name__ == '__main__':
     latency = []
     outpus = []
     counti = 0
-    for text in tqdm(texts[:1]):
+    # for text in tqdm(texts[:1]):
+    for text in tqdm(texts[:]):
         tokens = teacher.tokenizer.tokenize(text)[:max_len]
         input_ids = teacher.tokenizer.convert_tokens_to_ids(tokens)
         input_mask = [1] * len(input_ids)
