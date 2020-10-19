@@ -129,7 +129,7 @@ class BertClassification(BertPreTrainedModel):
 
         if label_ids is not None:
 
-            loss_fct = BCEWithLogitsLoss(pos_weight=torch.tensor([8,1]).to(device))
+            loss_fct = BCEWithLogitsLoss(pos_weight=torch.FloatTensor([8]).to(device))
             return loss_fct(logits, label_ids.view(-1,1))
         return logits
 
