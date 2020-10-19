@@ -128,7 +128,7 @@ class BertClassification(BertPreTrainedModel):
         # print('++debug type : logits: {}\nlabel_ids:{}'.format(type(logits), type(label_ids)))
 
         if label_ids is not None:
-            loss_fct = BCEWithLogitsLoss()
+            loss_fct = BCEWithLogitsLoss(pos_weight=torch.tensor([8,1]))
             return loss_fct(logits, label_ids.view(-1,1))
         return logits
 
@@ -149,7 +149,7 @@ def main(bert_model='bert-base-cased', cache_dir=None,
     writer = SummaryWriter()
 
     print('train data load ok')
-    tokenizer = BertTokenizer.from_pretrained(bert_model, do_lower_case=True)
+    tokenizer = BertTokenizer.from_pretrained(bert_model, do_lower_case=False)
     model = BertClassification.from_pretrained(bert_model,
                                                cache_dir=cache_dir, num_labels=len(label_list))
     # model = BertTextCNN.from_pretrained(bert_model,\
@@ -170,8 +170,8 @@ def main(bert_model='bert-base-cased', cache_dir=None,
     all_input_mask = torch.tensor([f.input_mask for f in train_features])
     all_label_ids = torch.FloatTensor([f.label_id for f in train_features])
     train_data = TensorDataset(all_input_ids, all_input_mask, all_label_ids)
-    # train_sampler = RandomSampler(train_data)  #从数据集中随机采样
-    train_sampler = WeightedRandomSampler(torch.FloatTensor([1, 4]).to(device), len(train_data),replacement=True)  #从数据集中随机采样
+    train_sampler = RandomSampler(train_data)  #从数据集中随机采样
+    # train_sampler = WeightedRandomSampler(torch.FloatTensor([1, 4]).to(device), len(train_data),replacement=True)  #从数据集中随机采样
     train_dataloader = DataLoader(train_data, sampler=train_sampler, batch_size=batch_size)
     # model.train()
 
@@ -237,7 +237,7 @@ def main(bert_model='bert-base-cased', cache_dir=None,
 
         if valid_loss<=valid_losss_min:
             print('Validation loss decreased ({:.6f}-->{:.6f}) Saving model ...'.format(valid_losss_min, valid_loss))
-            torch.save(model.state_dict(), 'data/cache/bert_finetune_sig_weightsamp_checkp.pt')
+            torch.save(model.state_dict(), 'data/cache/bert_finetune_sig_weightpos_cased.pt')
             valid_losss_min = valid_loss
 
         early_stopping(valid_loss, model)
@@ -246,8 +246,8 @@ def main(bert_model='bert-base-cased', cache_dir=None,
             print('Early Stopping: {}'.format(epoch))
             break
 
-    model.load_state_dict(torch.load('data/cache/bert_finetune_sig_weightsamp_checkp.pt'))
-    torch.save(model, 'data/cache/model_smedia_sig_weightsamp_smedia')
+    model.load_state_dict(torch.load('data/cache/bert_finetune_sig_weightpos_cased.pt'))
+    torch.save(model, 'data/cache/model_smedia_sig_weightpos_smedia_cased')
     print('bert fine-tune ok')
 
 if __name__ == '__main__':
