@@ -36,7 +36,7 @@ class Teacher(object):
     def __init__(self, bert_model='bert-base-cased', max_seq=128):
         self.max_seq = max_seq
         self.tokenizer = BertTokenizer.from_pretrained(
-            bert_model, do_lower_case=False)
+            bert_model, do_lower_case=True)
         # self.model = torch.load('./data/cache/model_smedia_smedia')  #加载预训练好的bert
         # self.model = torch.load('./data/cache/model_smedia_smedia_epoch20')  #加载预训练好的bert 20个epoch的
         # self.model = torch.load('./data/cache/model_smedia_smedia_earlyS')  #加载预训练好的bert  early stop patience==3, 结果就保存了第一个。
