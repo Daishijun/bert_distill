@@ -32,57 +32,20 @@ device = torch.device(args.device if torch.cuda.is_available() else 'cpu')
 
 FTensor = torch.cuda.FloatTensor if USE_CUDA else torch.FloatTensor
 
-# class Teacher(object):
-#     def __init__(self, bert_model='bert-base-cased', max_seq=128):
-#         self.max_seq = max_seq
-#         self.tokenizer = BertTokenizer.from_pretrained(
-#             bert_model, do_lower_case=True)
-#         # self.model = torch.load('./data/cache/model_smedia_smedia')  #加载预训练好的bert
-#         # self.model = torch.load('./data/cache/model_smedia_smedia_epoch20')  #加载预训练好的bert 20个epoch的
-#         # self.model = torch.load('./data/cache/model_smedia_smedia_earlyS')  #加载预训练好的bert  early stop patience==3, 结果就保存了第一个。
-#         # self.model = torch.load('./data/cache/model_smedia_smedia_earlyS_E50P5')  #加载预训练好的bert  early stop patience==5, 最多50个epoch。
-#         # self.model = torch.load('./data/cache/model_smedia_smedia_E50')
-#         # self.model = torch.load('./data/cache/model_smedia_sig_smedia')  #softmax换成sigmoid
-#         self.model = torch.load('./data/cache/model_smedia_sig_weightpos_smedia')  #softmax换成sigmoid+weightedposloss
-#         # self.model = torch.load('./data/cache/model_smedia_sig_weightsamp_smedia')  #softmax换成sigmoid+weightedposloss
-#         self.model.eval()  #只做预测不再调参
-#
-#     def predict(self, text):
-#         tokens = self.tokenizer.tokenize(text)[:self.max_seq]
-#         input_ids = self.tokenizer.convert_tokens_to_ids(tokens)  #这里没有再在收尾添加[CLS] [SEP]
-#         input_mask = [1] * len(input_ids)
-#         padding = [0] * (self.max_seq - len(input_ids))
-#         input_ids = torch.tensor([input_ids + padding], dtype=torch.long).to(device)
-#         input_mask = torch.tensor([input_mask + padding], dtype=torch.long).to(device)
-#         logits = self.model(input_ids, input_mask, None)
-#         # return F.softmax(logits, dim=1).detach().cpu().numpy()
-#         return F.sigmoid(logits).detach().cpu().numpy()
-
-class BertClassification(BertPreTrainedModel):
-    def __init__(self, config, num_labels=1):
-        super(BertClassification, self).__init__(config)
-        self.num_labels = num_labels
-        self.bert = BertModel(config)
-        self.dropout = nn.Dropout(config.hidden_dropout_prob)
-        self.classifier = nn.Linear(config.hidden_size, num_labels)
-        self.init_weights()
-
-    def forward(self, input_ids, input_mask, label_ids=None):
-        _, pooled_output = self.bert(input_ids, None, input_mask)
-        pooled_output = self.dropout(pooled_output)
-        logits = self.classifier(pooled_output)
-        if label_ids is not None:
-            loss_fct = BCEWithLogitsLoss()
-            return loss_fct(logits, label_ids.view(-1, 1))
-        # return logits
-        return F.sigmoid(logits)
-#
-class Teacher2(object):
-    def __init__(self, bert_model='bert-base-cased', trainedmodel=None, max_seq=128):
+class Teacher(object):
+    def __init__(self, bert_model='bert-base-cased', max_seq=128):
         self.max_seq = max_seq
         self.tokenizer = BertTokenizer.from_pretrained(
-            bert_model, do_lower_case=True)
-        self.model = trainedmodel
+            bert_model, do_lower_case=False)
+        # self.model = torch.load('./data/cache/model_smedia_smedia')  #加载预训练好的bert
+        # self.model = torch.load('./data/cache/model_smedia_smedia_epoch20')  #加载预训练好的bert 20个epoch的
+        # self.model = torch.load('./data/cache/model_smedia_smedia_earlyS')  #加载预训练好的bert  early stop patience==3, 结果就保存了第一个。
+        # self.model = torch.load('./data/cache/model_smedia_smedia_earlyS_E50P5')  #加载预训练好的bert  early stop patience==5, 最多50个epoch。
+        # self.model = torch.load('./data/cache/model_smedia_smedia_E50')
+        # self.model = torch.load('./data/cache/model_smedia_sig_smedia')  #softmax换成sigmoid
+        # self.model = torch.load('./data/cache/model_smedia_sig_weightpos_smedia')  #softmax换成sigmoid+weightedposloss
+        self.model = torch.load('./data/cache/model_smedia_sig_weightpos_smedia_cased')  #softmax换成sigmoid+weightedposloss
+        # self.model = torch.load('./data/cache/model_smedia_sig_weightsamp_smedia')  #softmax换成sigmoid+weightedposloss
         self.model.eval()  #只做预测不再调参
 
     def predict(self, text):
@@ -94,23 +57,62 @@ class Teacher2(object):
         input_mask = torch.tensor([input_mask + padding], dtype=torch.long).to(device)
         logits = self.model(input_ids, input_mask, None)
         # return F.softmax(logits, dim=1).detach().cpu().numpy()
-        # return F.sigmoid(logits).detach().cpu().numpy()
-        return logits.detach().cpu().numpy()
+        return F.sigmoid(logits).detach().cpu().numpy()
+
+# class BertClassification(BertPreTrainedModel):
+#     def __init__(self, config, num_labels=1):
+#         super(BertClassification, self).__init__(config)
+#         self.num_labels = num_labels
+#         self.bert = BertModel(config)
+#         self.dropout = nn.Dropout(config.hidden_dropout_prob)
+#         self.classifier = nn.Linear(config.hidden_size, num_labels)
+#         self.init_weights()
+#
+#     def forward(self, input_ids, input_mask, label_ids=None):
+#         _, pooled_output = self.bert(input_ids, None, input_mask)
+#         pooled_output = self.dropout(pooled_output)
+#         logits = self.classifier(pooled_output)
+#         if label_ids is not None:
+#             loss_fct = BCEWithLogitsLoss()
+#             return loss_fct(logits, label_ids.view(-1, 1))
+#         # return logits
+#         return F.sigmoid(logits)
+# #
+# class Teacher2(object):
+#     def __init__(self, bert_model='bert-base-cased', trainedmodel=None, max_seq=128):
+#         self.max_seq = max_seq
+#         self.tokenizer = BertTokenizer.from_pretrained(
+#             bert_model, do_lower_case=False)
+#         self.model = trainedmodel
+#         self.model.eval()  #只做预测不再调参
+#
+#     def predict(self, text):
+#         tokens = self.tokenizer.tokenize(text)[:self.max_seq]
+#         input_ids = self.tokenizer.convert_tokens_to_ids(tokens)  #这里没有再在收尾添加[CLS] [SEP]
+#         input_mask = [1] * len(input_ids)
+#         padding = [0] * (self.max_seq - len(input_ids))
+#         input_ids = torch.tensor([input_ids + padding], dtype=torch.long).to(device)
+#         input_mask = torch.tensor([input_mask + padding], dtype=torch.long).to(device)
+#         logits = self.model(input_ids, input_mask, None)
+#         # return F.softmax(logits, dim=1).detach().cpu().numpy()
+#         # return F.sigmoid(logits).detach().cpu().numpy()
+#         return logits.detach().cpu().numpy()
         # return F.sigmoid(logits).detach().cpu().numpy()
 
 if __name__ == '__main__':
 
-    newmodel = BertClassification.from_pretrained('bert-base-cased',
-                                                  cache_dir=None, num_labels=1)
-    newmodel.to(device)
-    print('load resave params ...')
-    newmodel.load_state_dict(torch.load('data/cache/cpucache/resaved_params_sig_weightedpos.pth'))
-    # newmodel.load_state_dict(torch.load('data/cache/bert_finetune_sig_weightpos_checkp.pt'))
-    print('load ok')
-    teacher = Teacher2(trainedmodel=newmodel)
+    # newmodel = BertClassification.from_pretrained('bert-base-cased',
+    #                                               cache_dir=None, num_labels=1)
+    # newmodel.to(device)
+    # print('load resave params ...')
+    # # newmodel.load_state_dict(torch.load('data/cache/cpucache/resaved_params_sig_weightedpos.pth'))
+    # newmodel.load_state_dict(torch.load('data/cache/cpucache/resaved_params_sig_weightedpos.pth'))
+    # # newmodel.load_state_dict(torch.load('data/cache/bert_finetune_sig_weightpos_checkp.pt'))
+    # print('load ok')
+    # teacher = Teacher2(trainedmodel=newmodel)
 
 
-    # teacher = Teacher()
+    teacher = Teacher()
     import pickle
     from tqdm import tqdm
 
@@ -176,10 +178,11 @@ if __name__ == '__main__':
     # np.savez('data/cache/prthres_bert_finetune_test_smedia_sig_weightsamp.npz', precision = precision, recall = recall, thres = thresholds, preds=pred_scores, truths=truths)
 
     # np.savez('data/cache/prthres_bert_finetune_test_smedia_sig_weightpos_check2.npz', precision = precision, recall = recall, thres = thresholds, preds=pred_scores, truths=truths)
+    np.savez('data/cache/prthres_bert_finetune_test_smedia_sig_weightpos_cased.npz', precision = precision, recall = recall, thres = thresholds, preds=pred_scores, truths=truths)
 
     print('p-r dump to npz ok')
-    with open('sigweightedpos_score_loadparams.txt', 'w') as f:
-        for sc in pred_scores:
-            f.write(str(sc))
-            f.write('\n')
-    print('write ok')
+    # with open('sigweightedpos_score_loadparams.txt', 'w') as f:
+    #     for sc in pred_scores:
+    #         f.write(str(sc))
+    #         f.write('\n')
+    # print('write ok')
